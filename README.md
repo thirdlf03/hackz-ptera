@@ -130,7 +130,15 @@ import { UserExample } from '@/features/users';
    pnpm install
    ```
 
-3. **開発サーバーの起動**
+3. **初回ビルド（初回起動時のみ必要）**
+   ```bash
+   # @repo/schema パッケージを事前にビルド
+   pnpm --filter @repo/schema build
+   ```
+
+   > **注意**: 初回起動時は必ず`@repo/schema`のビルドが必要です。APIサーバーがこのパッケージのビルド成果物に依存しているためです。
+
+4. **開発サーバーの起動**
    ```bash
    # すべての開発サーバーを並行起動（フロントエンド + API）
    pnpm dev
@@ -148,7 +156,7 @@ import { UserExample } from '@/features/users';
    pnpm --filter @repo/schema dev
    ```
 
-4. **ブラウザでアクセス**
+5. **ブラウザでアクセス**
    - フロントエンド: http://localhost:5173
    - API は Vite のプロキシ経由で `/api` にアクセス可能
 
