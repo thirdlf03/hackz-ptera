@@ -121,7 +121,7 @@ import { UserExample } from '@/features/users';
 
 1. **リポジトリのクローン**
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/thirdlf03/hackz-ptera.git
    cd hackz-ptera
    ```
 
