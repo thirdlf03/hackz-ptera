@@ -288,7 +288,7 @@ pnpm --filter frontend add -D <package-name>
 
 ```bash
 # 1. 新しいブランチを作成
-git checkout -b feature/your-feature
+git switch -c feature/your-feature
 
 # 2. スキーマを定義（必要な場合）
 # packages/schema/src/index.ts を編集
