@@ -7,9 +7,14 @@ import {
   UserCreatedResponseSchema,
 } from "@repo/schema";
 
+type Bindings = {
+  ASSETS: Fetcher;
+};
+
 let users: User[] = [];
 
-const app = new Hono()
+// API routes
+const api = new Hono<{ Bindings: Bindings }>()
   .get("/", (c) => {
     return c.text("Hello Hono!");
   })
@@ -28,6 +33,14 @@ const app = new Hono()
     return c.json(UserCreatedResponseSchema.parse(response), 201);
   });
 
-export type AppType = typeof app;
+// Main app
+const app = new Hono<{ Bindings: Bindings }>()
+  .route("/api", api)
+  .get("*", (c) => {
+    // Serve static assets for all other routes
+    return c.env.ASSETS.fetch(c.req.raw);
+  });
+
+export type AppType = typeof api;
 
 export default app;

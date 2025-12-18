@@ -10,7 +10,8 @@
       "persistent": true
     },
     "deploy": {
-      "dependsOn": ["build", "lint", "check-types"]
+      "dependsOn": ["build", "lint", "check-types"],
+      "cache": false
     },
     "test": {
       "dependsOn": ["^build"],
