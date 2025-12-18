@@ -1,16 +1,13 @@
-import { useState } from "react";
 import Board from "./features/chess/compomemt/Board";
 import "@/App.css";
 
 function App() {
-  const [count, setCount] = useState(0);
-
   return (
     <>
-    <div className="app-container">
-      <div className="title">Chess</div>
-      <Board className="container-3d"/>
-    </div>
+      <div className='app-container'>
+        <div className='title'>Chess</div>
+        <Board className='container-3d' />
+      </div>
     </>
   );
 }
