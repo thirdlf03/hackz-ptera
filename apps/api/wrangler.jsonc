@@ -13,7 +13,10 @@
   "assets": {
     "directory": "../../apps/frontend/dist",
     "binding": "ASSETS"
-  }
+  },
+  // Environment variables
+  // For local development, create a .dev.vars file with: GEMINI_API_KEY=your_api_key_here
+  // For production, set secrets with: wrangler secret put GEMINI_API_KEY
   // "compatibility_flags": [
   //   "nodejs_compat"
   // ],
