@@ -17,12 +17,12 @@ export function createGeminiClient(apiKey: string): GoogleGenerativeAI {
 
 /**
  * Gets a generative model instance from the Gemini client.
- * Defaults to gemini-1.5-flash model if no model name is specified.
+ * Defaults to gemini-2.0-flash-exp model if no model name is specified.
  *
  * @param client - The GoogleGenerativeAI client instance
- * @param modelName - The name of the model to use (default: "gemini-1.5-flash")
+ * @param modelName - The name of the model to use (default: "gemini-2.0-flash-exp")
  * @returns Generative model instance
  */
-export function getGenerativeModel(client: GoogleGenerativeAI, modelName = "gemini-1.5-flash") {
+export function getGenerativeModel(client: GoogleGenerativeAI, modelName = "gemini-2.0-flash-exp") {
   return client.getGenerativeModel({ model: modelName });
 }

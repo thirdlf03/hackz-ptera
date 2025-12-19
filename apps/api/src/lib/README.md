@@ -49,7 +49,7 @@ app.get("/generate", async (c) => {
   // Create client
   const client = createGeminiClient(apiKey);
 
-  // Get model (defaults to gemini-1.5-flash)
+  // Get model (defaults to gemini-2.0-flash-exp)
   const model = getGenerativeModel(client);
 
   // Generate content
@@ -85,12 +85,13 @@ Gets a generative model instance from the client.
 
 - **Parameters:**
   - `client` (GoogleGenerativeAI): The client instance
-  - `modelName` (string, optional): Model name (default: "gemini-1.5-flash")
+  - `modelName` (string, optional): Model name (default: "gemini-2.0-flash-exp")
 - **Returns:** Generative model instance
 
 ## Available Models
 
-- `gemini-1.5-flash` (default) - Fast and efficient for most tasks
+- `gemini-2.0-flash-exp` (default) - Latest experimental flash model (Gemini 2.0 Flash)
+- `gemini-1.5-flash` - Fast and efficient for most tasks
 - `gemini-1.5-pro` - More capable for complex tasks
 - `gemini-pro` - Previous generation model
 
