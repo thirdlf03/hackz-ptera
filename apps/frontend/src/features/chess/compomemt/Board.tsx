@@ -1,13 +1,14 @@
 import { Line } from "@react-three/drei";
+import { OrbitControls } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
+import ChessPieces from "./ChessPieces";
+
 import * as THREE from "three";
 import type React from "react";
 
 interface BoardProps {
   className?: string;
 }
-
-//rotation={[-Math.PI / 6, 0, 0]} scale={[1.5, 1, 1]}
 
 function ChessLine() {
   const squares = [];
@@ -55,16 +56,16 @@ function ChessLine() {
 const Board: React.FC<BoardProps> = ({ className }) => {
   return (
     <Canvas className={className}>
+      <OrbitControls />
       <ambientLight intensity={0.6} />
       <directionalLight position={[5, 5, 5]} />
-      <group>
+      <group rotation={[-Math.PI / 3, 0, 0]} scale={[1.5, 1, 1]}>
         <mesh>
-          {/* 平面ジオメトリ */}
           <planeGeometry args={[6, 6]} />
-          {/* ノーマルマテリアル */}
           <meshPhongMaterial color='rgba(173, 138, 41, 1)' />
         </mesh>
         <ChessLine />
+        <ChessPieces />
       </group>
     </Canvas>
   );

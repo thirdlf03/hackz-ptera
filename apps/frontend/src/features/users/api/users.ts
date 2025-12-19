@@ -11,5 +11,3 @@ export async function createUser(userData: CreateUser): Promise<UserCreatedRespo
   const response = await client.users.$post({ json: userData });
   return handleResponse<UserCreatedResponse>(response);
 }
-
-
