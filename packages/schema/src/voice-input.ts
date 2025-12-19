@@ -1,5 +1,12 @@
 import { z } from "zod";
 
+// Schema for voice input request
+export const VoiceInputRequestSchema = z.object({
+  text: z.string().min(1, "Voice input text is required"),
+});
+
+export type VoiceInputRequest = z.infer<typeof VoiceInputRequestSchema>;
+
 // Schema for normalized voice input
 export const VoiceInputSchema = z.object({
   piece: z
