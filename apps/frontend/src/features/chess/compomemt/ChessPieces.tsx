@@ -1,29 +1,12 @@
 import type { Piece, Position } from "@repo/schema";
-import { Vector3 } from "three";
-
-interface ChessPieceProps {
-  piece: Piece;
-}
-
-const ChessPiece = ({ piece }: ChessPieceProps) => {
-  const { position, color } = piece;
-  const vectorPosition = new Vector3(position.x, position.y, position.z);
-  const pieceColor = color === "white" ? "#f5f5dc" : "#4a3728";
-
-  return (
-    <mesh position={vectorPosition}>
-      <boxGeometry args={[0.3, 0.3, 0.7]} />
-      <meshStandardMaterial color={pieceColor} />
-    </mesh>
-  );
-};
+import ChessPiece6 from "./Pieces6";
 
 // ボード座標(0-7)からワールド座標へ変換
 const squareSize = 0.6;
 const boardToWorld = (col: number, row: number): Position => ({
   x: (col - 3.5) * squareSize,
   y: (row - 3.5) * squareSize,
-  z: 0.35,
+  z: 0.03,
 });
 
 const createInitialPieces = (): Piece[] => {
@@ -73,7 +56,7 @@ const ChessPieces = () => {
   return (
     <>
       {pieces.map((piece, index) => (
-        <ChessPiece key={`${piece.color}-${piece.type}-${index}`} piece={piece} />
+        <ChessPiece6 key={`${piece.color}-${piece.type}-${index}`} piece={piece} />
       ))}
     </>
   );
