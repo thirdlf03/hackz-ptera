@@ -1,4 +1,5 @@
 import Board from "./features/chess/compomemt/Board";
+
 import "@/App.css";
 
 function App() {
