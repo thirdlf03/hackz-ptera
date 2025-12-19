@@ -1,5 +1,5 @@
 import type { Piece, Position } from "@repo/schema";
-import ChessPiece6 from "./Pieces6";
+import ChooseFromSixPieces from "./ChooseFromSixPieces";
 
 // ボード座標(0-7)からワールド座標へ変換
 const squareSize = 0.6;
@@ -56,7 +56,10 @@ const ChessPieces = () => {
   return (
     <>
       {pieces.map((piece, index) => (
-        <ChessPiece6 key={`${piece.color}-${piece.type}-${index}`} piece={piece} />
+        <ChooseFromSixPieces
+          key={`${piece.color}-${piece.type}-${index}`}
+          piece={piece}
+        />
       ))}
     </>
   );
