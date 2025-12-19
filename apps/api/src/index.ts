@@ -9,6 +9,7 @@ import {
 
 type Bindings = {
   ASSETS: Fetcher;
+  GEMINI_API_KEY: string;
 };
 
 let users: User[] = [];
