@@ -5,21 +5,30 @@ export const VoiceInputSchema = z.object({
   piece: z
     .string()
     .describe("駒の種類 (例: ポーン、ルーク、ナイト、ビショップ、クイーン、キング) または '全体'"),
-  from: z
+  from: z.string().optional().describe("移動元の位置 (例: b5, a7)。指定がない場合は省略可能"),
+  to: z.string().optional().describe("移動先の位置 (例: a7)。指定がない場合は省略可能"),
+  order: z
     .string()
     .optional()
-    .describe("移動元の位置 (例: b5, a7)。全体指示や to のみの場合は空文字列"),
-  to: z.string().optional().describe("移動先の位置 (例: a7)。命令のみの場合は空文字列"),
-  order: z.string().optional().describe("駒への指示・命令 (例: がんばれ、前へ)"),
+    .describe("駒への指示・命令 (例: がんばれ、前へ)。指定がない場合は省略可能"),
 });
 
 export type VoiceInput = z.infer<typeof VoiceInputSchema>;
 
-// Response schema when voice input is successfully normalized
-export const VoiceInputResponseSchema = z.object({
-  success: z.boolean(),
-  data: VoiceInputSchema.optional(),
-  error: z.string().optional(),
+// Response schemas using discriminated unions for type safety
+export const VoiceInputSuccessResponseSchema = z.object({
+  success: z.literal(true),
+  data: VoiceInputSchema,
 });
+
+export const VoiceInputErrorResponseSchema = z.object({
+  success: z.literal(false),
+  error: z.string(),
+});
+
+export const VoiceInputResponseSchema = z.discriminatedUnion("success", [
+  VoiceInputSuccessResponseSchema,
+  VoiceInputErrorResponseSchema,
+]);
 
 export type VoiceInputResponse = z.infer<typeof VoiceInputResponseSchema>;
