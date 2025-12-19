@@ -1,7 +1,7 @@
 import { Line } from "@react-three/drei";
 import { OrbitControls } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
-import TestPiece from "./TestPiece";
+import ChessPieces from "./ChessPieces";
 
 import * as THREE from "three";
 import type React from "react";
@@ -63,7 +63,7 @@ const Board: React.FC<BoardProps> = ({ className }) => {
           <meshPhongMaterial color="rgba(173, 138, 41, 1)" />
         </mesh>
         <ChessLine />
-        <TestPiece />
+        <ChessPieces />
       </group>
     </Canvas>
   );
