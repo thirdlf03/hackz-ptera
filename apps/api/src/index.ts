@@ -34,12 +34,10 @@ const api = new Hono<{ Bindings: Bindings }>()
   });
 
 // Main app
-const app = new Hono<{ Bindings: Bindings }>()
-  .route("/api", api)
-  .get("*", (c) => {
-    // Serve static assets for all other routes
-    return c.env.ASSETS.fetch(c.req.raw);
-  });
+const app = new Hono<{ Bindings: Bindings }>().route("/api", api).get("*", (c) => {
+  // Serve static assets for all other routes
+  return c.env.ASSETS.fetch(c.req.raw);
+});
 
 export type AppType = typeof api;
 
