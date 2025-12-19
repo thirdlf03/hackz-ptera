@@ -23,7 +23,10 @@ const SYSTEM_PROMPT = `あなたはチェスの音声コマンドを構造化デ
 日本語、英語、その他の言語での入力に対応してください。`;
 
 /**
- * Converts the Zod schema to Google Generative AI schema format
+ * Converts the Zod schema to Google Generative AI schema format.
+ * Note: We use 'as any' here because the TypeScript types for Gemini schemas
+ * are overly strict and don't properly handle the schema structure we need.
+ * The schema is valid and works correctly at runtime.
  */
 function zodToGeminiSchema() {
   return {
@@ -33,7 +36,6 @@ function zodToGeminiSchema() {
         type: SchemaType.STRING,
         description:
           "駒の種類 (例: ポーン、ルーク、ナイト、ビショップ、クイーン、キング) または '全体'",
-        nullable: false,
       },
       from: {
         type: SchemaType.STRING,
