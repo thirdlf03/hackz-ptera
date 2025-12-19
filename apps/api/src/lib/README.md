@@ -45,18 +45,18 @@ import { createGeminiClient, getGenerativeModel } from "./lib/gemini";
 app.get("/generate", async (c) => {
   // Get API key from environment
   const apiKey = c.env.GEMINI_API_KEY;
-  
+
   // Create client
   const client = createGeminiClient(apiKey);
-  
+
   // Get model (defaults to gemini-1.5-flash)
   const model = getGenerativeModel(client);
-  
+
   // Generate content
   const result = await model.generateContent("Tell me a joke");
   const response = await result.response;
   const text = response.text();
-  
+
   return c.json({ text });
 });
 ```
