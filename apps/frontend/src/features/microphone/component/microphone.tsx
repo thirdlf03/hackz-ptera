@@ -1,0 +1,159 @@
+import { forwardRef, useEffect, useImperativeHandle, useRef } from "react";
+import { useFrame } from "@react-three/fiber";
+import { Text } from "@react-three/drei";
+import * as THREE from "three";
+import { useSpeechRecognition } from "../hooks/useSpeechRecognition";
+import type { UseSpeechRecognitionOptions } from "../hooks/useSpeechRecognition";
+
+export interface MicrophoneHandle {
+  /** 音声認識を開始 */
+  start: () => void;
+  /** 音声認識を停止 */
+  stop: () => void;
+  /** 現在のtranscriptを取得 */
+  getTranscript: () => string;
+  /** transcriptをリセット */
+  reset: () => void;
+  /** 現在認識中かどうか */
+  isListening: () => boolean;
+}
+
+export interface MicrophoneProps {
+  /** 認識テキストが更新されたときのコールバック */
+  onTranscript?: (transcript: string) => void;
+  /** 中間結果が更新されたときのコールバック */
+  onInterimTranscript?: (interimTranscript: string) => void;
+  /** エラー発生時のコールバック */
+  onError?: (error: string) => void;
+  /** 録音状態が変化したときのコールバック */
+  onListeningChange?: (isListening: boolean) => void;
+  /** 音声認識オプション */
+  speechRecognitionOptions?: UseSpeechRecognitionOptions;
+  /** メッシュの位置 */
+  position?: [number, number, number];
+  /** メッシュのスケール */
+  scale?: number;
+  /** テキストを表示するかどうか */
+  showText?: boolean;
+  /** テキストの最大幅 */
+  maxTextWidth?: number;
+  /** テキストのフォントサイズ */
+  textFontSize?: number;
+}
+
+const Microphone = forwardRef<MicrophoneHandle, MicrophoneProps>(
+  (
+    {
+      onTranscript,
+      onInterimTranscript,
+      onError,
+      onListeningChange,
+      speechRecognitionOptions,
+      position = [0, 0, 0],
+      scale = 1,
+      showText = true,
+      maxTextWidth = 2,
+      textFontSize = 0.1,
+    },
+    ref,
+  ) => {
+    const meshRef = useRef<THREE.Mesh>(null);
+
+    const {
+      transcript,
+      interimTranscript,
+      isListening,
+      isSupported,
+      error,
+      start,
+      stop,
+      resetTranscript,
+    } = useSpeechRecognition(speechRecognitionOptions);
+
+    useImperativeHandle(
+      ref,
+      () => ({
+        start,
+        stop,
+        getTranscript: () => transcript,
+        reset: resetTranscript,
+        isListening: () => isListening,
+      }),
+      [start, stop, transcript, resetTranscript, isListening],
+    );
+
+    useEffect(() => {
+      if (transcript) {
+        onTranscript?.(transcript);
+      }
+    }, [transcript, onTranscript]);
+
+    useEffect(() => {
+      onInterimTranscript?.(interimTranscript);
+    }, [interimTranscript, onInterimTranscript]);
+
+    useEffect(() => {
+      onListeningChange?.(isListening);
+    }, [isListening, onListeningChange]);
+
+    useEffect(() => {
+      if (error) {
+        onError?.(error);
+      }
+    }, [error, onError]);
+
+    useFrame((state) => {
+      if (meshRef.current && isListening) {
+        const pulse = 1 + Math.sin(state.clock.elapsedTime * 3) * 0.1;
+        meshRef.current.scale.set(pulse * scale, pulse * scale, pulse * scale);
+      } else if (meshRef.current) {
+        meshRef.current.scale.set(scale, scale, scale);
+      }
+    });
+
+    const handleClick = () => {
+      if (!isSupported) {
+        onError?.("このブラウザは音声認識をサポートしていません");
+        return;
+      }
+
+      if (isListening) {
+        stop();
+      } else {
+        start();
+      }
+    };
+
+    const displayText = interimTranscript || transcript || "";
+
+    return (
+      <group position={position}>
+        <mesh ref={meshRef} onClick={handleClick}>
+          <sphereGeometry args={[0.3, 32, 32]} />
+          <meshStandardMaterial
+            color={isListening ? "#ef4444" : "#6b7280"}
+            emissive={isListening ? "#dc2626" : "#000000"}
+            emissiveIntensity={isListening ? 0.5 : 0}
+          />
+        </mesh>
+        {showText && displayText && (
+          <Text
+            position={[0, 0.6, 0]}
+            fontSize={textFontSize}
+            color="black"
+            anchorX="center"
+            anchorY="bottom"
+            maxWidth={maxTextWidth}
+            textAlign="center"
+          >
+            {displayText}
+          </Text>
+        )}
+      </group>
+    );
+  },
+);
+
+Microphone.displayName = "Microphone";
+
+export default Microphone;
