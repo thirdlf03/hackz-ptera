@@ -75,7 +75,7 @@ function LinkVoiceAndId({
 }: {
   pieces: Piece[];
   command: VoiceInput | null;
-}): Piece["id"] {
+}): [Piece["id"], Position] {
   const vectors = new Map<string, Position>([
     ["A1", { x: -2.1, y: -2.1, z: 0.03 }],
     ["A2", { x: -2.1, y: -1.5, z: 0.03 }],
@@ -153,13 +153,16 @@ function LinkVoiceAndId({
   console.log("LinkVoiceAndId received command:", command);
   // ここでcommandを使って何か処理を行うことができます
   const location = command?.from?.toUpperCase(); //A1
+  const toLocation = command?.to?.toUpperCase();
   console.log(location?.toUpperCase());
+  console.log(toLocation?.toUpperCase());
 
   const hogehoge: Position = vectors.get(location!)!;
+  const toPosition: Position = vectors.get(toLocation!)!;
 
   if (hogehoge == undefined) {
     console.log("そこに駒はありません");
-    return -1;
+    return [-1, { x: -1, y: -1, z: -1 }];
   }
 
   let returnId = -1;
@@ -176,18 +179,18 @@ function LinkVoiceAndId({
       return piece.id;
     }
   });
-  return returnId;
+  return [returnId, toPosition];
 }
 
 function MoveCommand(pieces: Piece[], command: VoiceInput | null): Piece[] {
-  const pieceID = LinkVoiceAndId({ pieces, command });
+  const [pieceID, VoicePosition] = LinkVoiceAndId({ pieces, command });
   console.log("MoveCommand received pieceID:", pieceID);
   return pieces.map((piece) => {
     if (piece.id == pieceID) {
       console.log("MoveCommand:", piece.id);
       return {
         ...piece,
-        position: { x: 0.9, y: 0.3, z: 0.03 },
+        position: VoicePosition,
       };
     }
     return piece;

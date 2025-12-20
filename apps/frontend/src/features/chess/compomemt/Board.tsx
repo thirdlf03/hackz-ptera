@@ -1,5 +1,5 @@
 import { Line, Loader } from "@react-three/drei";
-import { OrbitControls, Text3D } from "@react-three/drei";
+import { OrbitControls } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import ChessPieces from "./ChessPieces";
 import { Microphone } from "@/features/microphone";
