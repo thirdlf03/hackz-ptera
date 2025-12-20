@@ -6,10 +6,16 @@ interface TurnState {
   change: () => void;
 }
 
-interface PositionChangeState {
-  beforePosition: Position;
-  afterPosition: Position;
-  change: (before: Position, after: Position) => void;
+interface AnimatingPiece {
+  id: number;
+  from: Position;
+  to: Position;
+}
+
+interface AnimationState {
+  animatingPiece: AnimatingPiece | null;
+  startAnimation: (id: number, from: Position, to: Position) => void;
+  clearAnimation: () => void;
 }
 
 export const useTurnStore = create<TurnState>((set) => ({
@@ -18,9 +24,8 @@ export const useTurnStore = create<TurnState>((set) => ({
     set((state) => ({ turn: state.turn === "white" ? "black" : "white" })),
 }));
 
-export const usePositionChangeStore = create<PositionChangeState>((set) => ({
-  beforePosition: { x: -1, y: -1, z: -1 },
-  afterPosition: { x: -1, y: -1, z: -1 },
-  change: (before: Position, after: Position) =>
-    set(() => ({ beforePosition: before, afterPosition: after })),
+export const useAnimationStore = create<AnimationState>((set) => ({
+  animatingPiece: null,
+  startAnimation: (id, from, to) => set({ animatingPiece: { id, from, to } }),
+  clearAnimation: () => set({ animatingPiece: null }),
 }));
