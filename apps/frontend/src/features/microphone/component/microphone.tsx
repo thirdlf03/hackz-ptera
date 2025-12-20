@@ -96,13 +96,11 @@ const Microphone = forwardRef<MicrophoneHandle, MicrophoneProps>(
               setTransformedData(response.data);
               console.log("変換成功:", response.data);
             } else {
-              setErrorMessage(response.error);
               console.error("変換エラー:", response.error);
             }
           },
           onError: (error) => {
             const errorMsg = error instanceof Error ? error.message : "Unknown error";
-            setErrorMessage(errorMsg);
             console.error("API呼び出しエラー:", errorMsg);
           },
         },
@@ -190,7 +188,7 @@ const Microphone = forwardRef<MicrophoneHandle, MicrophoneProps>(
             emissiveIntensity={isActive ? 0.5 : 0}
           />
         </mesh>
-        {showText && displayText && (
+        {showText && (
           <Text
             position={[0, 0.6, 0]}
             fontSize={textFontSize}
@@ -200,7 +198,7 @@ const Microphone = forwardRef<MicrophoneHandle, MicrophoneProps>(
             maxWidth={maxTextWidth}
             textAlign="center"
           >
-            {displayText}
+            {displayText || (isListening ? "話してください..." : "クリックして話す")}
           </Text>
         )}
         {/* Display loading state */}

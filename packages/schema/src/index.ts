@@ -4,3 +4,4 @@ export * from "./chess";
 export * from "./voice-input";
 export * from "./aiResponse";
 export * from "./personality";
+export * from "./backend-chess";
