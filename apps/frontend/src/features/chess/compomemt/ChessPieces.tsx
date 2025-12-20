@@ -2,13 +2,13 @@ import type { Piece, Position } from "@repo/schema";
 import ChooseFromSixPieces from "./ChooseFromSixPieces";
 import { useEffect, useState } from "react";
 import type { VoiceInput } from "@repo/schema";
-import { plane } from "three/examples/jsm/Addons.js";
+// import { plane } from "three/examples/jsm/Addons.js";
 
 // ボード座標(0-7)からワールド座標へ変換
 const squareSize = 0.6;
 const boardToWorld = (col: number, row: number): Position => ({
-  x: (col - 3.5) * squareSize,
-  y: (row - 3.5) * squareSize,
+  x: Math.round((col - 3.5) * squareSize * 10) / 10,
+  y: Math.round((row - 3.5) * squareSize * 10) / 10,
   z: 0.03,
 });
 
@@ -121,6 +121,7 @@ function LinkVoiceAndId({
     ["E6", { x: 0.3, y: 0.9, z: 0.03 }],
     ["E7", { x: 0.3, y: 1.5, z: 0.03 }],
     ["E8", { x: 0.3, y: 2.1, z: 0.03 }],
+
     ["F1", { x: 0.9, y: -2.1, z: 0.03 }],
     ["F2", { x: 0.9, y: -1.5, z: 0.03 }],
     ["F3", { x: 0.9, y: -0.9, z: 0.03 }],
@@ -156,28 +157,37 @@ function LinkVoiceAndId({
 
   const hogehoge: Position = vectors.get(location!)!;
 
+  if (hogehoge == undefined) {
+    console.log("そこに駒はありません");
+    return -1;
+  }
+
+  let returnId = -1;
+  console.log(pieces);
+
   pieces.map((piece) => {
     if (
-      piece.position.x == hogehoge.x &&
-      piece.position.y == hogehoge.y &&
-      piece.position.z == hogehoge.z
+      piece.position.x === hogehoge.x &&
+      piece.position.y === hogehoge.y &&
+      piece.position.z === hogehoge.z
     ) {
-      console.log(piece.id);
+      console.log("LinkVoiceAndId:", piece.id);
+      returnId = piece.id;
       return piece.id;
     }
   });
-
-  return -1;
+  return returnId;
 }
 
 function MoveCommand(pieces: Piece[], command: VoiceInput | null): Piece[] {
   const pieceID = LinkVoiceAndId({ pieces, command });
+  console.log("MoveCommand received pieceID:", pieceID);
   return pieces.map((piece) => {
-    console.log("command in MoveCommand:", command);
     if (piece.id == pieceID) {
+      console.log("MoveCommand:", piece.id);
       return {
         ...piece,
-        position: { x: 0.3, y: 0.3, z: 0.03 },
+        position: { x: 0.9, y: 0.3, z: 0.03 },
       };
     }
     return piece;

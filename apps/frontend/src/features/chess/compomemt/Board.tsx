@@ -1,13 +1,15 @@
-import { Line } from "@react-three/drei";
-import { OrbitControls } from "@react-three/drei";
+import { Line, Loader } from "@react-three/drei";
+import { OrbitControls, Text3D } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import ChessPieces from "./ChessPieces";
 import { Microphone } from "@/features/microphone";
 import { useState } from "react";
 import type { VoiceInput } from "@repo/schema";
+import Mark from "./Mark";
 
 import * as THREE from "three";
 import type React from "react";
+// import { T } from "node_modules/vitest/dist/chunks/traces.d.402V_yFI";
 
 interface BoardProps {
   className?: string;
@@ -16,7 +18,9 @@ interface BoardProps {
 function ChessLine() {
   const squares = [];
   const squareSize = 0.6; // 1マスのサイズ
-  const borderColor = new THREE.Color("rgba(228, 221, 209, 1)").convertSRGBToLinear();
+  const borderColor = new THREE.Color(
+    "rgba(228, 221, 209, 1)"
+  ).convertSRGBToLinear();
 
   for (let row = 0; row < 8; row++) {
     for (let col = 0; col < 8; col++) {
@@ -60,6 +64,7 @@ const Board: React.FC<BoardProps> = ({ className }) => {
   return (
     <Canvas className={className}>
       <OrbitControls />
+      <Loader />
       <ambientLight intensity={0.6} />
       <directionalLight position={[5, 5, 5]} />
       <Microphone
@@ -72,10 +77,11 @@ const Board: React.FC<BoardProps> = ({ className }) => {
         onError={(err) => console.error(err)}
         position={[0, 1.5, 2.5]}
       />
-      <group rotation={[-Math.PI / 3, 0, 0]} scale={[1.5, 1, 1]}>
+      <group rotation={[-Math.PI / 5, 0, 0]} scale={[1.5, 1, 1]}>
         <mesh>
           <planeGeometry args={[6, 6]} />
-          <meshPhongMaterial color="rgba(173, 138, 41, 1)" />
+          <Mark />
+          <meshPhongMaterial color='rgba(173, 138, 41, 1)' />
         </mesh>
         <ChessLine />
         <ChessPieces command={commanddata} />
