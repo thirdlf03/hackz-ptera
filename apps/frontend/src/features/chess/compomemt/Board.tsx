@@ -16,13 +16,10 @@ interface BoardProps {
   className?: string;
 }
 
-
 function ChessLine() {
   const squares = [];
   const squareSize = 0.6; // 1マスのサイズ
-  const borderColor = new THREE.Color(
-    "rgba(228, 221, 209, 1)"
-  ).convertSRGBToLinear();
+  const borderColor = new THREE.Color("rgba(228, 221, 209, 1)").convertSRGBToLinear();
 
   for (let row = 0; row < 8; row++) {
     for (let col = 0; col < 8; col++) {
@@ -62,7 +59,7 @@ function ChessLine() {
 }
 const Board: React.FC<BoardProps> = ({ className }) => {
   const [commanddata, setCommanddata] = useState<VoiceInput | null>(null);
-  const {turn, } = useTurnStore()
+  const { turn } = useTurnStore();
 
   return (
     <Canvas className={className}>
@@ -71,7 +68,7 @@ const Board: React.FC<BoardProps> = ({ className }) => {
       <ambientLight intensity={0.6} />
       <directionalLight position={[5, 5, 5]} />
       {turn == "white" && (
-          <Microphone
+        <Microphone
           onTranscript={(text) => console.log("認識結果:", text)}
           onTransformSuccess={(data) => {
             console.log("親で変換成功データを取得:", data);
@@ -83,7 +80,7 @@ const Board: React.FC<BoardProps> = ({ className }) => {
         />
       )}
       {turn == "black" && (
-          <Microphone
+        <Microphone
           onTranscript={(text) => console.log("認識結果:", text)}
           onTransformSuccess={(data) => {
             console.log("親で変換成功データを取得:", data);
@@ -94,12 +91,12 @@ const Board: React.FC<BoardProps> = ({ className }) => {
           position={[0, 1.5, 5]}
         />
       )}
-  
+
       <group rotation={[-Math.PI / 5, 0, turn === "black" ? 3.15 : 0]} scale={[1.5, 1, 1]}>
         <mesh>
           <planeGeometry args={[6, 6]} />
           <Mark />
-          <meshPhongMaterial color='rgba(173, 138, 41, 1)' />
+          <meshPhongMaterial color="rgba(173, 138, 41, 1)" />
         </mesh>
         <ChessLine />
         <ChessPieces command={commanddata} />

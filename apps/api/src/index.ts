@@ -6,14 +6,15 @@ import {
   VoiceInputSuccessResponseSchema,
   VoiceInputErrorResponseSchema,
   ResolveActionInputSchema,
+  initGameSchema,
   UserCreatedInputSchema,
 } from "@repo/schema";
 import { createGeminiClient } from "./lib/gemini";
 import { transformVoiceInput } from "./lib/voice-input-transformer";
 import { resolveAction } from "./lib/resolve-action";
-import { drizzle } from 'drizzle-orm/d1';
-import { users } from "./db/schema"
-
+import { drizzle } from "drizzle-orm/d1";
+import { users } from "./db/schema";
+import { createGame } from "./lib/create-game";
 
 type Bindings = {
   ASSETS: Fetcher;
@@ -21,12 +22,11 @@ type Bindings = {
   DB: D1Database;
 };
 
-
 // API routes
 const api = new Hono<{ Bindings: Bindings }>()
   .get("/", async (c) => {
     const db = drizzle(c.env.DB);
-    const result = await db.select().from(users).all()
+    const result = await db.select().from(users).all();
     return Response.json(result);
   })
   .get("/users", (c) => {
@@ -34,10 +34,10 @@ const api = new Hono<{ Bindings: Bindings }>()
     return c.json(UsersResponseSchema.parse(response));
   })
   .post("/v1/users", zValidator("json", UserCreatedInputSchema), async (c) => {
-    const params = c.req.valid("json"); 
+    const params = c.req.valid("json");
     const db = drizzle(c.env.DB);
     const uuid = self.crypto.randomUUID();
-    await db.insert(users).values({ id: uuid, name: params.name});
+    await db.insert(users).values({ id: uuid, name: params.name });
     return c.json({ userId: uuid, success: true }, 201);
   })
   .post("/voice-input/transform", zValidator("json", VoiceInputRequestSchema), async (c) => {
@@ -79,6 +79,18 @@ const api = new Hono<{ Bindings: Bindings }>()
 
       // TODO: 201
       return c.json(result, 200);
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Unknown error occurred";
+      return c.json({ error: errorMessage }, 500);
+    }
+  })
+  .post("/v1/createGame", zValidator("json", initGameSchema), async (c) => {
+    try {
+      const db = drizzle(c.env.DB);
+      const gameData = c.req.valid("json");
+      const result = await createGame(gameData, db);
+
+      return c.json(result, 201);
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "Unknown error occurred";
       return c.json({ error: errorMessage }, 500);

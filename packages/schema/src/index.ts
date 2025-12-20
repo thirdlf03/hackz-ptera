@@ -6,3 +6,4 @@ export * from "./aiResponse";
 export * from "./personality";
 export * from "./backend-chess";
 export * from "./resolve-action";
+export * from "./initGame";
