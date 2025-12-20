@@ -212,7 +212,7 @@ const ChooseFromSixPieces = ({ piece }: ChessPieceProps) => {
       );
 
       // 滑らかに移動（lerpの係数を調整で速度変更可能）
-      groupRef.current.position.lerp(target, 0.02);
+      groupRef.current.position.lerp(target, 0.04);
 
       // 目標位置に十分近づいたらアニメーション完了
       if (groupRef.current.position.distanceTo(target) < 0.01) {

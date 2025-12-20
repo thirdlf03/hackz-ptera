@@ -98,7 +98,7 @@ const Board: React.FC<BoardProps> = ({ className }) => {
       >
         <mesh>
           <planeGeometry args={[6, 6]} />
-          <Mark />
+          <Mark color={turn} />
           <meshPhongMaterial color="rgba(173, 138, 41, 1)" />
         </mesh>
         <ChessLine />

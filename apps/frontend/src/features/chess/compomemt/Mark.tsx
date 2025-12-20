@@ -1,58 +1,75 @@
 import { Text3D } from "@react-three/drei";
-// import { T } from "node_modules/vitest/dist/chunks/traces.d.402V_yFI";
-// import { T } from "node_modules/vitest/dist/chunks/traces.d.402V_yFI";
 
 const FONT_URL =
   "https://threejs.org/examples/fonts/helvetiker_regular.typeface.json";
 
-type MarkProps = {
-  color: "white" | "black";
-};
-
-export default function Mark({ color }: MarkProps) {
+export default function Mark({ color }: { color: string }) {
   const isBlack = color === "black";
 
-  // 黒の場合は180度回転
+  // 黒は Z軸で180度回転（文字を正しい向きに）
   const rotation: [number, number, number] = isBlack
-    ? [0, Math.PI, 0]
+    ? [0, 0, Math.PI]
     : [0, 0, 0];
 
-  // 数字のY座標（2〜8）
-  const numberPositions = [
-    { num: "1", y: -2.25 },
-    { num: "2", y: -1.65 },
-    { num: "3", y: -1.05 },
-    { num: "4", y: -0.45 },
-    { num: "5", y: 0.15 },
-    { num: "6", y: 0.73 },
-    { num: "7", y: 1.3 },
-    { num: "8", y: 1.9 },
+  // 白側の数字（左側、1が下）
+  const whiteNumbers = [
+    { num: "1", position: [-2.8, -2.25, 0.03] },
+    { num: "2", position: [-2.8, -1.65, 0.03] },
+    { num: "3", position: [-2.8, -1.05, 0.03] },
+    { num: "4", position: [-2.8, -0.45, 0.03] },
+    { num: "5", position: [-2.8, 0.15, 0.03] },
+    { num: "6", position: [-2.8, 0.73, 0.03] },
+    { num: "7", position: [-2.8, 1.3, 0.03] },
+    { num: "8", position: [-2.8, 1.97, 0.03] },
   ];
 
-  // アルファベットのX座標（A〜H）
-  const letterPositions = [
-    { letter: "A", x: -2.25 },
-    { letter: "B", x: -1.6 },
-    { letter: "C", x: -1.05 },
-    { letter: "D", x: -0.42 },
-    { letter: "E", x: 0.17 },
-    { letter: "F", x: 0.78 },
-    { letter: "G", x: 1.32 },
-    { letter: "H", x: 1.93 },
+  // 黒側の数字（右側）- 黒から見て8が下、1が上になるように
+  const blackNumbers = [
+    { num: "8", position: [2.82, -1.93, 0.03] },
+    { num: "7", position: [2.82, -1.33, 0.03] },
+    { num: "6", position: [2.82, -0.74, 0.03] },
+    { num: "5", position: [2.82, -0.1, 0.03] },
+    { num: "4", position: [2.82, 0.5, 0.03] },
+    { num: "3", position: [2.82, 1.08, 0.03] },
+    { num: "2", position: [2.82, 1.72, 0.03] },
+    { num: "1", position: [2.82, 2.33, 0.03] },
   ];
 
-  // 白: 左側に数字、下にアルファベット
-  // 黒: 右側に数字、上にアルファベット（180度回転）
-  const numberX = isBlack ? 2.5 : -2.8;
-  const letterY = isBlack ? 2.52 : -2.87;
+  // 白側のアルファベット（下側、AからH）
+  const whiteLetters = [
+    { letter: "A", position: [-2.25, -2.87, 0.03] },
+    { letter: "B", position: [-1.63, -2.87, 0.03] },
+    { letter: "C", position: [-1.05, -2.87, 0.03] },
+    { letter: "D", position: [-0.43, -2.87, 0.03] },
+    { letter: "E", position: [0.17, -2.87, 0.03] },
+    { letter: "F", position: [0.78, -2.87, 0.03] },
+    { letter: "G", position: [1.32, -2.87, 0.03] },
+    { letter: "H", position: [1.93, -2.87, 0.03] },
+  ];
+
+  // 黒側のアルファベット（上側）- 黒から見てAが左、Hが右になるように
+  const blackLetters = [
+    { letter: "H", position: [-1.93, 2.9, 0.03] },
+    { letter: "G", position: [-1.3, 2.9, 0.03] },
+    { letter: "F", position: [-0.8, 2.9, 0.03] },
+    { letter: "E", position: [-0.2, 2.9, 0.03] },
+    { letter: "D", position: [0.41, 2.9, 0.03] },
+    { letter: "C", position: [1.05, 2.9, 0.03] },
+    { letter: "B", position: [1.6, 2.9, 0.03] },
+    { letter: "A", position: [2.2, 2.9, 0.03] },
+  ];
+
+  const numbers = isBlack ? blackNumbers : whiteNumbers;
+  const letters = isBlack ? blackLetters : whiteLetters;
 
   return (
-    <group rotation={rotation}>
-      {/* 数字 2-8 */}
-      {numberPositions.map(({ num, y }) => (
+    <group>
+      {/* 数字 */}
+      {numbers.map(({ num, position }) => (
         <Text3D
-          key={`num-${num}`}
-          position={[numberX, y, 0.03]}
+          key={`num-${num}-${color}`}
+          position={position as [number, number, number]}
+          rotation={rotation}
           size={0.35}
           height={0.05}
           font={FONT_URL}
@@ -62,11 +79,12 @@ export default function Mark({ color }: MarkProps) {
         </Text3D>
       ))}
 
-      {/* アルファベット A-H */}
-      {letterPositions.map(({ letter, x }) => (
+      {/* アルファベット */}
+      {letters.map(({ letter, position }) => (
         <Text3D
-          key={`letter-${letter}`}
-          position={[x, letterY, 0.03]}
+          key={`letter-${letter}-${color}`}
+          position={position as [number, number, number]}
+          rotation={rotation}
           size={0.35}
           height={0.05}
           font={FONT_URL}
