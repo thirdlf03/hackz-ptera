@@ -92,10 +92,7 @@ const Board: React.FC<BoardProps> = ({ className }) => {
         />
       )}
 
-      <group
-        rotation={[-Math.PI / 5, 0, turn === "black" ? 3.15 : 0]}
-        scale={[1.5, 1, 1]}
-      >
+      <group rotation={[-Math.PI / 5, 0, turn === "black" ? 3.15 : 0]} scale={[1.5, 1, 1]}>
         <mesh>
           <planeGeometry args={[6, 6]} />
           <Mark />

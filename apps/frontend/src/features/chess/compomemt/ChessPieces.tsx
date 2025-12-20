@@ -192,7 +192,6 @@ function MoveCommand(
   });
 }
 
-
 const ChessPieces = ({ command }: { command: VoiceInput | null }) => {
   const [pieces, setPieces] = useState(createInitialPieces());
   const { startAnimation } = useAnimationStore();

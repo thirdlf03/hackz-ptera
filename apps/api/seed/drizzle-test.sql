@@ -35,3 +35,5 @@ CREATE TABLE IF NOT EXISTS personalitys (
 );
 
 INSERT INTO users (name) VALUES ("hello");
+INSERT INTO users (id, name) VALUES ('550e8400-e29b-41d4-a716-446655440000', 'Player');
+INSERT INTO users (id, name) VALUES ('550e8400-e29b-41d4-a716-446655440001', 'Enemy');
