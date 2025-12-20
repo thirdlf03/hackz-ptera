@@ -189,7 +189,7 @@ const King = ({ color }: { color: string }) => (
 );
 
 // 駒のレンダリング
-const ChessPiece6 = ({ piece }: ChessPieceProps) => {
+const ChooseFromSixPieces = ({ piece }: ChessPieceProps) => {
   const { position, color, type } = piece;
   const vectorPosition = new Vector3(position.x, position.y, position.z);
   const pieceColor = color === "white" ? "#f5f5dc" : "#4a3728";
@@ -210,4 +210,4 @@ const ChessPiece6 = ({ piece }: ChessPieceProps) => {
   );
 };
 
-export default ChessPiece6;
+export default ChooseFromSixPieces;

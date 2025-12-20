@@ -1,5 +1,5 @@
 import type { Piece, Position } from "@repo/schema";
-import ChessPiece6 from "./Pieces6";
+import ChooseFromSixPieces from "./ChooseFromSixPieces";
 
 // ボード座標(0-7)からワールド座標へ変換
 const squareSize = 0.6;
@@ -25,10 +25,12 @@ const createInitialPieces = (): Piece[] => {
 
   // 白駒 (row 0, 1)
   backRow.forEach((type, col) => {
-    pieces.push({ type, color: "white", position: boardToWorld(col, 0) });
+    pieces.push({ id: col, exist: true, type, color: "white", position: boardToWorld(col, 0) });
   });
   for (let col = 0; col < 8; col++) {
     pieces.push({
+      id: 8 + col,
+      exist: true,
       type: "pawn",
       color: "white",
       position: boardToWorld(col, 1),
@@ -38,13 +40,21 @@ const createInitialPieces = (): Piece[] => {
   // 黒駒 (row 6, 7)
   for (let col = 0; col < 8; col++) {
     pieces.push({
+      id: 16 + col,
+      exist: true,
       type: "pawn",
       color: "black",
       position: boardToWorld(col, 6),
     });
   }
   backRow.forEach((type, col) => {
-    pieces.push({ type, color: "black", position: boardToWorld(col, 7) });
+    pieces.push({
+      id: 24 + col,
+      exist: true,
+      type,
+      color: "black",
+      position: boardToWorld(col, 7),
+    });
   });
 
   return pieces;
@@ -56,7 +66,7 @@ const ChessPieces = () => {
   return (
     <>
       {pieces.map((piece, index) => (
-        <ChessPiece6 key={`${piece.color}-${piece.type}-${index}`} piece={piece} />
+        <ChooseFromSixPieces key={`${piece.color}-${piece.type}-${index}`} piece={piece} />
       ))}
     </>
   );
