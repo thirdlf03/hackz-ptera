@@ -1,9 +1,11 @@
-import { forwardRef, useEffect, useImperativeHandle, useRef } from "react";
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 import { useFrame } from "@react-three/fiber";
 import { Text } from "@react-three/drei";
 import * as THREE from "three";
 import { useSpeechRecognition } from "../hooks/useSpeechRecognition";
 import type { UseSpeechRecognitionOptions } from "../hooks/useSpeechRecognition";
+import { useVoiceInputTransform } from "@/features/voice-input";
+import type { VoiceInput } from "@repo/schema";
 
 export interface MicrophoneHandle {
   /** 音声認識を開始 */
@@ -39,6 +41,12 @@ export interface MicrophoneProps {
   maxTextWidth?: number;
   /** テキストのフォントサイズ */
   textFontSize?: number;
+  /** 音声変換APIを有効にするかどうか */
+  enableVoiceTransform?: boolean;
+  /** 変換結果を表示するかどうか */
+  showTransformResult?: boolean;
+  /** 変換結果表示の位置オフセット */
+  transformResultPosition?: [number, number, number];
 }
 
 const Microphone = forwardRef<MicrophoneHandle, MicrophoneProps>(
@@ -54,21 +62,67 @@ const Microphone = forwardRef<MicrophoneHandle, MicrophoneProps>(
       showText = true,
       maxTextWidth = 2,
       textFontSize = 0.1,
+      enableVoiceTransform = true,
+      showTransformResult = true,
+      transformResultPosition = [0, 1, 0],
     },
     ref,
   ) => {
     const meshRef = useRef<THREE.Mesh>(null);
+    const [transformedData, setTransformedData] = useState<VoiceInput | null>(null);
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+    const { mutate: transformVoice, isPending } = useVoiceInputTransform();
+
+    const handleRecordingComplete = (transcript: string) => {
+      // Call the original callback if provided
+      if (speechRecognitionOptions?.onRecordingComplete) {
+        speechRecognitionOptions.onRecordingComplete(transcript);
+      }
+
+      if (!enableVoiceTransform || !transcript || transcript.trim() === "") {
+        return;
+      }
+
+      // Reset previous state
+      setTransformedData(null);
+      setErrorMessage(null);
+
+      transformVoice(
+        { text: transcript },
+        {
+          onSuccess: (response) => {
+            if (response.success) {
+              setTransformedData(response.data);
+              console.log("変換成功:", response.data);
+            } else {
+              setErrorMessage(response.error);
+              console.error("変換エラー:", response.error);
+            }
+          },
+          onError: (error) => {
+            const errorMsg = error instanceof Error ? error.message : "Unknown error";
+            setErrorMessage(errorMsg);
+            console.error("API呼び出しエラー:", errorMsg);
+          },
+        },
+      );
+    };
 
     const {
       transcript,
       interimTranscript,
       isListening,
+      isActive,
       isSupported,
       error,
       start,
       stop,
       resetTranscript,
-    } = useSpeechRecognition(speechRecognitionOptions);
+    } = useSpeechRecognition({
+      ...speechRecognitionOptions,
+      onRecordingComplete: handleRecordingComplete,
+    });
 
     useImperativeHandle(
       ref,
@@ -103,7 +157,7 @@ const Microphone = forwardRef<MicrophoneHandle, MicrophoneProps>(
     }, [error, onError]);
 
     useFrame((state) => {
-      if (meshRef.current && isListening) {
+      if (meshRef.current && isActive) {
         const pulse = 1 + Math.sin(state.clock.elapsedTime * 3) * 0.1;
         meshRef.current.scale.set(pulse * scale, pulse * scale, pulse * scale);
       } else if (meshRef.current) {
@@ -131,9 +185,9 @@ const Microphone = forwardRef<MicrophoneHandle, MicrophoneProps>(
         <mesh ref={meshRef} onClick={handleClick}>
           <sphereGeometry args={[0.3, 32, 32]} />
           <meshStandardMaterial
-            color={isListening ? "#ef4444" : "#6b7280"}
-            emissive={isListening ? "#dc2626" : "#000000"}
-            emissiveIntensity={isListening ? 0.5 : 0}
+            color={isActive ? "#ef4444" : "#6b7280"}
+            emissive={isActive ? "#dc2626" : "#000000"}
+            emissiveIntensity={isActive ? 0.5 : 0}
           />
         </mesh>
         {showText && displayText && (
@@ -147,6 +201,47 @@ const Microphone = forwardRef<MicrophoneHandle, MicrophoneProps>(
             textAlign="center"
           >
             {displayText}
+          </Text>
+        )}
+        {/* Display loading state */}
+        {enableVoiceTransform && showTransformResult && isPending && (
+          <Text
+            position={transformResultPosition}
+            fontSize={0.15}
+            color="blue"
+            anchorX="center"
+            anchorY="middle"
+          >
+            変換中...
+          </Text>
+        )}
+        {/* Display transformed data */}
+        {enableVoiceTransform && showTransformResult && transformedData && !isPending && (
+          <Text
+            position={transformResultPosition}
+            fontSize={0.12}
+            color="green"
+            anchorX="center"
+            anchorY="middle"
+            maxWidth={3}
+          >
+            {`駒: ${transformedData.piece}`}
+            {transformedData.from && `\nFrom: ${transformedData.from}`}
+            {transformedData.to && `\nTo: ${transformedData.to}`}
+            {transformedData.order && `\n命令: ${transformedData.order}`}
+          </Text>
+        )}
+        {/* Display error message */}
+        {enableVoiceTransform && showTransformResult && errorMessage && !isPending && (
+          <Text
+            position={transformResultPosition}
+            fontSize={0.12}
+            color="red"
+            anchorX="center"
+            anchorY="middle"
+            maxWidth={3}
+          >
+            {`エラー: ${errorMessage}`}
           </Text>
         )}
       </group>

@@ -72,7 +72,7 @@ function zodToGeminiSchema() {
 export async function transformVoiceInput(
   client: GoogleGenerativeAI,
   inputText: string,
-  modelName = "gemini-2.0-flash-exp",
+  modelName = "gemini-2.5-flash-lite",
 ): Promise<VoiceInput> {
   try {
     // Get model with structured output configuration
