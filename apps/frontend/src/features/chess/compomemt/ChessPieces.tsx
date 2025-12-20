@@ -1,5 +1,6 @@
 import type { Piece, Position } from "@repo/schema";
 import ChooseFromSixPieces from "./ChooseFromSixPieces";
+import { useEffect, useState } from "react";
 
 // ボード座標(0-7)からワールド座標へ変換
 const squareSize = 0.6;
@@ -25,7 +26,13 @@ const createInitialPieces = (): Piece[] => {
 
   // 白駒 (row 0, 1)
   backRow.forEach((type, col) => {
-    pieces.push({ id: col, exist: true, type, color: "white", position: boardToWorld(col, 0) });
+    pieces.push({
+      id: col,
+      exist: true,
+      type,
+      color: "white",
+      position: boardToWorld(col, 0),
+    });
   });
   for (let col = 0; col < 8; col++) {
     pieces.push({
@@ -60,13 +67,32 @@ const createInitialPieces = (): Piece[] => {
   return pieces;
 };
 
-const ChessPieces = () => {
-  const pieces = createInitialPieces();
+function MoveCommand(pieces: Piece[], command: string): Piece[] {
+  return pieces.map((piece) => {
+    if (piece.id == 4) {
+      return {
+        ...piece,
+        position: { x: 0.3, y: 0.3, z: 0.03 },
+      };
+    }
+    return piece;
+  });
+}
+
+const ChessPieces = ({ command }: { command: string }) => {
+  const [talking, setTalking] = useState(true);
+  const [pieces, setPieces] = useState(createInitialPieces());
+
+  useEffect(() => {
+    if (talking) {
+      setPieces(MoveCommand(pieces, command));
+    }
+  }, [command]);
 
   return (
     <>
-      {pieces.map((piece, index) => (
-        <ChooseFromSixPieces key={`${piece.color}-${piece.type}-${index}`} piece={piece} />
+      {pieces.map((piece) => (
+        <ChooseFromSixPieces piece={piece} />
       ))}
     </>
   );

@@ -14,7 +14,9 @@ interface BoardProps {
 function ChessLine() {
   const squares = [];
   const squareSize = 0.6; // 1マスのサイズ
-  const borderColor = new THREE.Color("rgba(228, 221, 209, 1)").convertSRGBToLinear();
+  const borderColor = new THREE.Color(
+    "rgba(228, 221, 209, 1)"
+  ).convertSRGBToLinear();
 
   for (let row = 0; row < 8; row++) {
     for (let col = 0; col < 8; col++) {
@@ -53,6 +55,7 @@ function ChessLine() {
   );
 }
 const Board: React.FC<BoardProps> = ({ className }) => {
+  const command = "キングをe4へ"; // ここに音声認識からのコマンドを渡す
   return (
     <Canvas className={className}>
       <OrbitControls />
@@ -67,10 +70,10 @@ const Board: React.FC<BoardProps> = ({ className }) => {
       <group rotation={[-Math.PI / 3, 0, 0]} scale={[1.5, 1, 1]}>
         <mesh>
           <planeGeometry args={[6, 6]} />
-          <meshPhongMaterial color="rgba(173, 138, 41, 1)" />
+          <meshPhongMaterial color='rgba(173, 138, 41, 1)' />
         </mesh>
         <ChessLine />
-        <ChessPieces />
+        <ChessPieces command={command} />
       </group>
     </Canvas>
   );
