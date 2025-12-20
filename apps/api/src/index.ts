@@ -5,7 +5,12 @@ import {
   type User,
   UsersResponseSchema,
   UserCreatedResponseSchema,
+  VoiceInputRequestSchema,
+  VoiceInputSuccessResponseSchema,
+  VoiceInputErrorResponseSchema,
 } from "@repo/schema";
+import { createGeminiClient } from "./lib/gemini";
+import { transformVoiceInput } from "./lib/voice-input-transformer";
 
 type Bindings = {
   ASSETS: Fetcher;
@@ -32,6 +37,35 @@ const api = new Hono<{ Bindings: Bindings }>()
     users.push(newUser);
     const response = { message: "User created", user: newUser };
     return c.json(UserCreatedResponseSchema.parse(response), 201);
+  })
+  .post("/voice-input/transform", zValidator("json", VoiceInputRequestSchema), async (c) => {
+    try {
+      const { text } = c.req.valid("json");
+      const apiKey = c.env.GEMINI_API_KEY;
+
+      // Create Gemini client
+      const client = createGeminiClient(apiKey);
+
+      // Transform voice input using Gemini
+      const transformedData = await transformVoiceInput(client, text);
+
+      // Return success response with parsed data
+      const response = VoiceInputSuccessResponseSchema.parse({
+        success: true,
+        data: transformedData,
+      });
+
+      return c.json(response, 200);
+    } catch (error) {
+      // Return error response
+      const errorMessage = error instanceof Error ? error.message : "Unknown error occurred";
+      const response = VoiceInputErrorResponseSchema.parse({
+        success: false,
+        error: errorMessage,
+      });
+
+      return c.json(response, 500);
+    }
   });
 
 // Main app
