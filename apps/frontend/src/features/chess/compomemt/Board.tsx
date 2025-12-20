@@ -68,7 +68,7 @@ const Board: React.FC<BoardProps> = ({ className }) => {
         onTranscript={(text) => console.log("認識結果:", text)}
         onTransformSuccess={(data) => {
           console.log("親で変換成功データを取得:", data);
-          setCommanddata(data);
+          setCommanddata({ piece: data.piece, from: data.from, to: data.to });
         }}
         onListeningChange={(listening) => console.log("録音中:", listening)}
         onError={(err) => console.error(err)}
