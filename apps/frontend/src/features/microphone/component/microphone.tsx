@@ -64,7 +64,7 @@ const Microphone = forwardRef<MicrophoneHandle, MicrophoneProps>(
       textFontSize = 0.1,
       enableVoiceTransform = true,
       showTransformResult = true,
-      transformResultPosition = [0, 2, 0],
+      transformResultPosition = [0, 1, 0],
     },
     ref,
   ) => {
