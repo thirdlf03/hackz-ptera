@@ -10,9 +10,8 @@ import {
 import { createGeminiClient } from "./lib/gemini";
 import { transformVoiceInput } from "./lib/voice-input-transformer";
 import { resolveAction } from "./lib/resolve-action";
-import { drizzle } from 'drizzle-orm/d1';
-import { users } from "./db/schema"
-
+import { drizzle } from "drizzle-orm/d1";
+import { users } from "./db/schema";
 
 type Bindings = {
   ASSETS: Fetcher;
@@ -20,12 +19,11 @@ type Bindings = {
   DB: D1Database;
 };
 
-
 // API routes
 const api = new Hono<{ Bindings: Bindings }>()
   .get("/", async (c) => {
     const db = drizzle(c.env.DB);
-    const result = await db.select().from(users).all()
+    const result = await db.select().from(users).all();
     return Response.json(result);
   })
   .get("/users", (c) => {

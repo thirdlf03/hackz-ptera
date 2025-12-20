@@ -73,9 +73,9 @@ const MODEL_ID = process.env.MODEL_ID ?? "amazon.nova-lite-v1:0";
 
 const client = new BedrockRuntimeClient({ region: REGION });
 
-export const handler = async (
-  event: { body?: string | object }
-): Promise<{
+export const handler = async (event: {
+  body?: string | object;
+}): Promise<{
   statusCode: number;
   headers: { "Content-Type": string };
   body: string;
@@ -83,9 +83,7 @@ export const handler = async (
   try {
     // 1) API Gateway 互換: body を parse（string / object 両対応）
     const rawBody: unknown =
-      typeof event.body === "string"
-        ? JSON.parse(event.body)
-        : event.body ?? {};
+      typeof event.body === "string" ? JSON.parse(event.body) : (event.body ?? {});
 
     // 2) 入力検証（ここが壊れてたら 400）
     const input: SolveActionInput = SolveActionInputSchema.parse(rawBody);
@@ -124,9 +122,7 @@ export const handler = async (
     };
 
     // 4) Bedrock 呼び出し
-    const resp: ConverseCommandOutput = await client.send(
-      new ConverseCommand(request)
-    );
+    const resp: ConverseCommandOutput = await client.send(new ConverseCommand(request));
 
     // 5) toolUse.input を抽出
     const contents = resp.output?.message?.content ?? [];
@@ -157,7 +153,7 @@ export const handler = async (
 
 function json(
   statusCode: number,
-  obj: unknown
+  obj: unknown,
 ): {
   statusCode: number;
   headers: { "Content-Type": string };

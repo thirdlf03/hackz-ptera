@@ -6,17 +6,18 @@ export async function resolveAction(input: ResolveActionInput): Promise<AIRespon
   const randomAttack = Math.random() < 0.5;
 
   console.log("=== AWS API Call Start ===");
-  const res = await fetch("https://ue2gz6ytek.execute-api.ap-northeast-1.amazonaws.com/dev/v1/ai/solve/action", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ prompt: "テスト" }),
-  });
+  const res = await fetch(
+    "https://ue2gz6ytek.execute-api.ap-northeast-1.amazonaws.com/dev/v1/ai/solve/action",
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ prompt: "テスト" }),
+    },
+  );
   console.log("Status:", res.status, res.statusText);
   const responseData = await res.json();
   console.log("Response:", JSON.stringify(responseData, null, 2));
   console.log("=== AWS API Call End ===");
-
-
 
   const reasons = [
     "王を守るための移動",
