@@ -75,11 +75,19 @@ const Microphone = forwardRef<MicrophoneHandle, MicrophoneProps>(
     const { mutate: transformVoice, isPending } = useVoiceInputTransform();
 
     const handleRecordingComplete = (transcript: string) => {
+      // Call the original callback if provided
+      if (speechRecognitionOptions?.onRecordingComplete) {
+        speechRecognitionOptions.onRecordingComplete(transcript);
+      }
+
       if (!enableVoiceTransform || !transcript || transcript.trim() === "") {
         return;
       }
 
+      // Reset previous state
+      setTransformedData(null);
       setErrorMessage(null);
+
       transformVoice(
         { text: transcript },
         {
@@ -112,7 +120,7 @@ const Microphone = forwardRef<MicrophoneHandle, MicrophoneProps>(
       resetTranscript,
     } = useSpeechRecognition({
       ...speechRecognitionOptions,
-      onRecordingComplete: enableVoiceTransform ? handleRecordingComplete : speechRecognitionOptions?.onRecordingComplete,
+      onRecordingComplete: handleRecordingComplete,
     });
 
     useImperativeHandle(
