@@ -135,6 +135,54 @@ describe("Voice Input Transformer", () => {
       );
     });
 
+    it("should default to '全体' when no piece is specified", async () => {
+      const mockResponse = {
+        piece: "全体",
+        order: "がんばれ",
+      };
+
+      const mockGenerateContent = vi.fn().mockResolvedValue({
+        response: {
+          text: () => JSON.stringify(mockResponse),
+        },
+      });
+
+      vi.spyOn(mockClient, "getGenerativeModel").mockReturnValue({
+        generateContent: mockGenerateContent,
+      } as any);
+
+      const result = await transformVoiceInput(mockClient, "がんばれ");
+
+      expect(result).toEqual({
+        piece: "全体",
+        order: "がんばれ",
+      });
+    });
+
+    it("should default to '全体' for movement commands without piece", async () => {
+      const mockResponse = {
+        piece: "全体",
+        order: "前へ",
+      };
+
+      const mockGenerateContent = vi.fn().mockResolvedValue({
+        response: {
+          text: () => JSON.stringify(mockResponse),
+        },
+      });
+
+      vi.spyOn(mockClient, "getGenerativeModel").mockReturnValue({
+        generateContent: mockGenerateContent,
+      } as any);
+
+      const result = await transformVoiceInput(mockClient, "前へ");
+
+      expect(result).toEqual({
+        piece: "全体",
+        order: "前へ",
+      });
+    });
+
     it("should throw error when response is invalid JSON", async () => {
       const mockGenerateContent = vi.fn().mockResolvedValue({
         response: {
