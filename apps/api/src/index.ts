@@ -66,6 +66,9 @@ const api = new Hono<{ Bindings: Bindings }>()
 
       return c.json(response, 500);
     }
+  })
+  .get("/v1/health", (c) => {
+    return c.json({ status: "ok" }, 200);
   });
 
 // Main app
