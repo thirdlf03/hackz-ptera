@@ -5,7 +5,7 @@ import ChessPieces from "./ChessPieces";
 import { Microphone } from "@/features/microphone";
 import { useState } from "react";
 import type { VoiceInput } from "@repo/schema";
-import useTurnStore from "./store";
+import { useTurnStore } from "./store";
 import Mark from "./Mark";
 
 import * as THREE from "three";

@@ -1,0 +1,45 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Chess AI Lambda Function with Bedrock
+
+Globals:
+  Function:
+    Timeout: 30
+    MemorySize: 512
+    Runtime: nodejs22.x
+    Architectures:
+      - x86_64
+
+Resources:
+  ChessAIFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: dist/lambda/
+      Handler: index.handler
+      Environment:
+        Variables:
+          AWS_REGION: ap-northeast-1
+          MODEL_ID: amazon.nova-lite-v1:0
+      Policies:
+        - Statement:
+            - Effect: Allow
+              Action:
+                - bedrock:InvokeModel
+                - bedrock:Converse
+              Resource:
+                - !Sub 'arn:aws:bedrock:${AWS::Region}::foundation-model/amazon.nova-lite-v1:0'
+                - !Sub 'arn:aws:bedrock:${AWS::Region}::foundation-model/amazon.nova-micro-v1:0'
+      Events:
+        ChessAPI:
+          Type: Api
+          Properties:
+            Path: /solve-action
+            Method: post
+
+Outputs:
+  ChessAIApi:
+    Description: "API Gateway endpoint URL"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/solve-action/"
+  ChessAIFunction:
+    Description: "Lambda Function ARN"
+    Value: !GetAtt ChessAIFunction.Arn

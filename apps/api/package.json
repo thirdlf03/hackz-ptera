@@ -16,20 +16,24 @@
     "lint": "oxlint src",
     "format": "oxfmt --write src",
     "format:check": "oxfmt src",
-    "check-types": "tsc --noEmit"
+    "check-types": "tsc --noEmit",
+    "build:lambda": "esbuild src/lambda/index.ts --bundle --platform=node --target=node22 --format=cjs --outfile=dist/index.js"
   },
   "dependencies": {
+    "@aws-sdk/client-bedrock-runtime": "^3.956.0",
     "@google/generative-ai": "^0.24.1",
     "@hono/zod-validator": "^0.7.5",
     "@repo/schema": "workspace:*",
     "drizzle-orm": "^0.45.1",
-    "hono": "^4.11.1"
+    "hono": "^4.11.1",
+    "zod": "^4.2.1"
   },
   "devDependencies": {
     "@cloudflare/vitest-pool-workers": "^0.11.0",
     "@cloudflare/workers-types": "^4.20251217.0",
     "@types/node": "^24.10.4",
     "drizzle-kit": "^0.31.8",
+    "esbuild": "^0.27.2",
     "vitest": "^4.0.16",
     "wrangler": "^4.4.0"
   }
