@@ -2,7 +2,7 @@ import type { Piece, Position } from "@repo/schema";
 import ChooseFromSixPieces from "./ChooseFromSixPieces";
 import { useEffect, useState } from "react";
 import type { VoiceInput } from "@repo/schema";
-import { useAnimationStore, useTurnStore } from "./store";
+import { useAnimationStore } from "./store";
 
 const squareSize = 0.6;
 const boardToWorld = (col: number, row: number): Position => ({
