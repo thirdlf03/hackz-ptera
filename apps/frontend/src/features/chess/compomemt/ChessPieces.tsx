@@ -2,6 +2,7 @@ import type { Piece, Position } from "@repo/schema";
 import ChooseFromSixPieces from "./ChooseFromSixPieces";
 import { useEffect, useState } from "react";
 import type { VoiceInput } from "@repo/schema";
+import useTurnStore from "./store";
 // import { plane } from "three/examples/jsm/Addons.js";
 
 // ボード座標(0-7)からワールド座標へ変換
@@ -199,10 +200,12 @@ function MoveCommand(pieces: Piece[], command: VoiceInput | null): Piece[] {
 
 const ChessPieces = ({ command }: { command: VoiceInput | null }) => {
   const [pieces, setPieces] = useState(createInitialPieces());
+  const {change} = useTurnStore()
 
   useEffect(() => {
     if (command) {
       setPieces(MoveCommand(pieces, command));
+      setTimeout(change, 2000);
     }
   }, [command]);
 
