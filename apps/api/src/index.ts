@@ -1,10 +1,7 @@
 import { Hono } from "hono";
 import { zValidator } from "@hono/zod-validator";
 import {
-  CreateUserSchema,
-  type User,
   UsersResponseSchema,
-  UserCreatedResponseSchema,
   VoiceInputRequestSchema,
   VoiceInputSuccessResponseSchema,
   VoiceInputErrorResponseSchema,
