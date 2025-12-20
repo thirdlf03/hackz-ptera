@@ -113,6 +113,7 @@ const Microphone = forwardRef<MicrophoneHandle, MicrophoneProps>(
       transcript,
       interimTranscript,
       isListening,
+      isActive,
       isSupported,
       error,
       start,
@@ -156,7 +157,7 @@ const Microphone = forwardRef<MicrophoneHandle, MicrophoneProps>(
     }, [error, onError]);
 
     useFrame((state) => {
-      if (meshRef.current && isListening) {
+      if (meshRef.current && isActive) {
         const pulse = 1 + Math.sin(state.clock.elapsedTime * 3) * 0.1;
         meshRef.current.scale.set(pulse * scale, pulse * scale, pulse * scale);
       } else if (meshRef.current) {
@@ -184,9 +185,9 @@ const Microphone = forwardRef<MicrophoneHandle, MicrophoneProps>(
         <mesh ref={meshRef} onClick={handleClick}>
           <sphereGeometry args={[0.3, 32, 32]} />
           <meshStandardMaterial
-            color={isListening ? "#ef4444" : "#6b7280"}
-            emissive={isListening ? "#dc2626" : "#000000"}
-            emissiveIntensity={isListening ? 0.5 : 0}
+            color={isActive ? "#ef4444" : "#6b7280"}
+            emissive={isActive ? "#dc2626" : "#000000"}
+            emissiveIntensity={isActive ? 0.5 : 0}
           />
         </mesh>
         {showText && displayText && (
