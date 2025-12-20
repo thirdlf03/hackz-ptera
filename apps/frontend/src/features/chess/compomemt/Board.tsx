@@ -5,6 +5,7 @@ import ChessPieces from "./ChessPieces";
 import { Microphone } from "@/features/microphone";
 import { useState } from "react";
 import type { VoiceInput } from "@repo/schema";
+import useTurnStore from "./store";
 import Mark from "./Mark";
 
 import * as THREE from "three";
@@ -14,6 +15,7 @@ import type React from "react";
 interface BoardProps {
   className?: string;
 }
+
 
 function ChessLine() {
   const squares = [];
@@ -60,6 +62,7 @@ function ChessLine() {
 }
 const Board: React.FC<BoardProps> = ({ className }) => {
   const [commanddata, setCommanddata] = useState<VoiceInput | null>(null);
+  const {turn, } = useTurnStore()
 
   return (
     <Canvas className={className}>
@@ -67,17 +70,32 @@ const Board: React.FC<BoardProps> = ({ className }) => {
       <Loader />
       <ambientLight intensity={0.6} />
       <directionalLight position={[5, 5, 5]} />
-      <Microphone
-        onTranscript={(text) => console.log("認識結果:", text)}
-        onTransformSuccess={(data) => {
-          console.log("親で変換成功データを取得:", data);
-          setCommanddata({ piece: data.piece, from: data.from, to: data.to });
-        }}
-        onListeningChange={(listening) => console.log("録音中:", listening)}
-        onError={(err) => console.error(err)}
-        position={[0, 1.5, 2.5]}
-      />
-      <group rotation={[-Math.PI / 5, 0, 0]} scale={[1.5, 1, 1]}>
+      {turn == "white" && (
+          <Microphone
+          onTranscript={(text) => console.log("認識結果:", text)}
+          onTransformSuccess={(data) => {
+            console.log("親で変換成功データを取得:", data);
+            setCommanddata({ piece: data.piece, from: data.from, to: data.to });
+          }}
+          onListeningChange={(listening) => console.log("録音中:", listening)}
+          onError={(err) => console.error(err)}
+          position={[0, 1.5, 5]}
+        />
+      )}
+      {turn == "black" && (
+          <Microphone
+          onTranscript={(text) => console.log("認識結果:", text)}
+          onTransformSuccess={(data) => {
+            console.log("親で変換成功データを取得:", data);
+            setCommanddata({ piece: data.piece, from: data.from, to: data.to });
+          }}
+          onListeningChange={(listening) => console.log("録音中:", listening)}
+          onError={(err) => console.error(err)}
+          position={[0, 1.5, 5]}
+        />
+      )}
+  
+      <group rotation={[-Math.PI / 5, 0, turn === "black" ? 3.15 : 0]} scale={[1.5, 1, 1]}>
         <mesh>
           <planeGeometry args={[6, 6]} />
           <Mark />
