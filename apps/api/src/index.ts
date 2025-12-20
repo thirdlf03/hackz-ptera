@@ -1,10 +1,7 @@
 import { Hono } from "hono";
 import { zValidator } from "@hono/zod-validator";
 import {
-  CreateUserSchema,
-  type User,
   UsersResponseSchema,
-  UserCreatedResponseSchema,
   VoiceInputRequestSchema,
   VoiceInputSuccessResponseSchema,
   VoiceInputErrorResponseSchema,
@@ -13,32 +10,27 @@ import {
 import { createGeminiClient } from "./lib/gemini";
 import { transformVoiceInput } from "./lib/voice-input-transformer";
 import { resolveAction } from "./lib/resolve-action";
+import { drizzle } from 'drizzle-orm/d1';
+import { users } from "./db/schema"
+
 
 type Bindings = {
   ASSETS: Fetcher;
   GEMINI_API_KEY: string;
+  DB: D1Database;
 };
 
-let users: User[] = [];
 
 // API routes
 const api = new Hono<{ Bindings: Bindings }>()
-  .get("/", (c) => {
-    return c.text("Hello Hono!");
+  .get("/", async (c) => {
+    const db = drizzle(c.env.DB);
+    const result = await db.select().from(users).all()
+    return Response.json(result);
   })
   .get("/users", (c) => {
     const response = { users };
     return c.json(UsersResponseSchema.parse(response));
-  })
-  .post("/users", zValidator("json", CreateUserSchema), (c) => {
-    const data = c.req.valid("json");
-    const newUser: User = {
-      id: crypto.randomUUID(),
-      ...data,
-    };
-    users.push(newUser);
-    const response = { message: "User created", user: newUser };
-    return c.json(UserCreatedResponseSchema.parse(response), 201);
   })
   .post("/voice-input/transform", zValidator("json", VoiceInputRequestSchema), async (c) => {
     try {
