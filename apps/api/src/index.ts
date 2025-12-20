@@ -6,6 +6,7 @@ import {
   VoiceInputSuccessResponseSchema,
   VoiceInputErrorResponseSchema,
   ResolveActionInputSchema,
+  UserCreatedInputSchema,
 } from "@repo/schema";
 import { createGeminiClient } from "./lib/gemini";
 import { transformVoiceInput } from "./lib/voice-input-transformer";
@@ -31,6 +32,13 @@ const api = new Hono<{ Bindings: Bindings }>()
   .get("/users", (c) => {
     const response = { users };
     return c.json(UsersResponseSchema.parse(response));
+  })
+  .post("/v1/users", zValidator("json", UserCreatedInputSchema), async (c) => {
+    const params = c.req.valid("json"); 
+    const db = drizzle(c.env.DB);
+    const uuid = self.crypto.randomUUID();
+    await db.insert(users).values({ id: uuid, name: params.name});
+    return c.json({ userId: uuid, success: true }, 201);
   })
   .post("/voice-input/transform", zValidator("json", VoiceInputRequestSchema), async (c) => {
     try {
