@@ -3,6 +3,8 @@ import { OrbitControls } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import ChessPieces from "./ChessPieces";
 import { Microphone } from "@/features/microphone";
+import { useState } from "react";
+import type { VoiceInput } from "@repo/schema";
 
 import * as THREE from "three";
 import type React from "react";
@@ -55,7 +57,8 @@ function ChessLine() {
   );
 }
 const Board: React.FC<BoardProps> = ({ className }) => {
-  const command = "キングをe4へ"; // ここに音声認識からのコマンドを渡す
+  const [commanddata, setCommanddata] = useState<VoiceInput | null>(null);
+
   return (
     <Canvas className={className}>
       <OrbitControls />
@@ -63,6 +66,10 @@ const Board: React.FC<BoardProps> = ({ className }) => {
       <directionalLight position={[5, 5, 5]} />
       <Microphone
         onTranscript={(text) => console.log("認識結果:", text)}
+        onTransformSuccess={(data) => {
+          console.log("親で変換成功データを取得:", data);
+          setCommanddata(data);
+        }}
         onListeningChange={(listening) => console.log("録音中:", listening)}
         onError={(err) => console.error(err)}
         position={[0, 1.5, 2.5]}
@@ -73,7 +80,7 @@ const Board: React.FC<BoardProps> = ({ className }) => {
           <meshPhongMaterial color='rgba(173, 138, 41, 1)' />
         </mesh>
         <ChessLine />
-        <ChessPieces command={command} />
+        <ChessPieces command={commanddata} />
       </group>
     </Canvas>
   );

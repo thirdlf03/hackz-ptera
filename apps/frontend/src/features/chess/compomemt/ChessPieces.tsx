@@ -1,6 +1,7 @@
 import type { Piece, Position } from "@repo/schema";
 import ChooseFromSixPieces from "./ChooseFromSixPieces";
 import { useEffect, useState } from "react";
+import type { VoiceInput } from "@repo/schema";
 
 // ボード座標(0-7)からワールド座標へ変換
 const squareSize = 0.6;
@@ -67,8 +68,9 @@ const createInitialPieces = (): Piece[] => {
   return pieces;
 };
 
-function MoveCommand(pieces: Piece[], command: string): Piece[] {
+function MoveCommand(pieces: Piece[], command: VoiceInput | null): Piece[] {
   return pieces.map((piece) => {
+    console.log("command in MoveCommand:", command);
     if (piece.id == 4) {
       return {
         ...piece,
@@ -79,12 +81,12 @@ function MoveCommand(pieces: Piece[], command: string): Piece[] {
   });
 }
 
-const ChessPieces = ({ command }: { command: string }) => {
+const ChessPieces = ({ command }: { command: VoiceInput | null }) => {
   const [talking, setTalking] = useState(true);
   const [pieces, setPieces] = useState(createInitialPieces());
 
   useEffect(() => {
-    if (talking) {
+    if (talking && command) {
       setPieces(MoveCommand(pieces, command));
     }
   }, [command]);
