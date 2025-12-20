@@ -131,7 +131,6 @@ export const useSpeechRecognition = (
       }
 
       if (finalText) {
-        // 累積せず、最新の確定結果のみを保持
         setTranscript(finalText);
       }
       setInterimTranscript(interimText);
