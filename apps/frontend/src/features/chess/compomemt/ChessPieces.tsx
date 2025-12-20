@@ -198,14 +198,18 @@ function MoveCommand(pieces: Piece[], command: VoiceInput | null): Piece[] {
   });
 }
 
+
 const ChessPieces = ({ command }: { command: VoiceInput | null }) => {
   const [pieces, setPieces] = useState(createInitialPieces());
   const {change} = useTurnStore()
+  const [pieceID, ] = LinkVoiceAndId({ pieces, command });
 
   useEffect(() => {
     if (command) {
       setPieces(MoveCommand(pieces, command));
-      setTimeout(change, 2000);
+      if (pieceID != -1){
+        setTimeout(change, 2000);
+      }
     }
   }, [command]);
 
