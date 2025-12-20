@@ -2,7 +2,7 @@ import type { Piece, Position } from "@repo/schema";
 import ChooseFromSixPieces from "./ChooseFromSixPieces";
 import { useEffect, useState } from "react";
 import type { VoiceInput } from "@repo/schema";
-import useTurnStore from "./store";
+import { usePositionChangeStore } from "./store";
 // import { plane } from "three/examples/jsm/Addons.js";
 
 // ボード座標(0-7)からワールド座標へ変換
@@ -183,12 +183,21 @@ function LinkVoiceAndId({
   return [returnId, toPosition];
 }
 
-function MoveCommand(pieces: Piece[], command: VoiceInput | null): Piece[] {
+function MoveCommand(
+  pieces: Piece[],
+  command: VoiceInput | null,
+  changeFn: (before: Position, after: Position) => void
+): Piece[] {
   const [pieceID, VoicePosition] = LinkVoiceAndId({ pieces, command });
+
   console.log("MoveCommand received pieceID:", pieceID);
   return pieces.map((piece) => {
     if (piece.id == pieceID) {
-      console.log("MoveCommand:", piece.id);
+      const beforePosition = piece.position;
+      console.log("BeforePosition:", beforePosition);
+      console.log("AfterPosition:", VoicePosition);
+      changeFn(beforePosition, VoicePosition);
+
       return {
         ...piece,
         position: VoicePosition,
@@ -200,12 +209,11 @@ function MoveCommand(pieces: Piece[], command: VoiceInput | null): Piece[] {
 
 const ChessPieces = ({ command }: { command: VoiceInput | null }) => {
   const [pieces, setPieces] = useState(createInitialPieces());
-  const {change} = useTurnStore()
+  const { change } = usePositionChangeStore();
 
   useEffect(() => {
     if (command) {
-      setPieces(MoveCommand(pieces, command));
-      setTimeout(change, 2000);
+      setPieces(MoveCommand(pieces, command, change));
     }
   }, [command]);
 
