@@ -29,6 +29,8 @@ export interface MicrophoneProps {
   onError?: (error: string) => void;
   /** 録音状態が変化したときのコールバック */
   onListeningChange?: (isListening: boolean) => void;
+   /** 最終的に音声変換が成功したときのコールバック */
+   onTransformSuccess?: (data: VoiceInput) => void;
   /** 音声認識オプション */
   speechRecognitionOptions?: UseSpeechRecognitionOptions;
   /** メッシュの位置 */
@@ -56,6 +58,7 @@ const Microphone = forwardRef<MicrophoneHandle, MicrophoneProps>(
       onInterimTranscript,
       onError,
       onListeningChange,
+      onTransformSuccess,
       speechRecognitionOptions,
       position = [0, 0, 0],
       scale = 1,
@@ -95,6 +98,7 @@ const Microphone = forwardRef<MicrophoneHandle, MicrophoneProps>(
             if (response.success) {
               setTransformedData(response.data);
               console.log("変換成功:", response.data);
+              onTransformSuccess?.(response.data);
             } else {
               console.error("変換エラー:", response.error);
             }
