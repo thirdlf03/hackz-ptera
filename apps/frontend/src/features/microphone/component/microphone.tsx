@@ -29,8 +29,8 @@ export interface MicrophoneProps {
   onError?: (error: string) => void;
   /** 録音状態が変化したときのコールバック */
   onListeningChange?: (isListening: boolean) => void;
-   /** 最終的に音声変換が成功したときのコールバック */
-   onTransformSuccess?: (data: VoiceInput) => void;
+  /** 最終的に音声変換が成功したときのコールバック */
+  onTransformSuccess?: (data: VoiceInput) => void;
   /** 音声認識オプション */
   speechRecognitionOptions?: UseSpeechRecognitionOptions;
   /** メッシュの位置 */
