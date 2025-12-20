@@ -1,9 +1,11 @@
-import { forwardRef, useEffect, useImperativeHandle, useRef } from "react";
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 import { useFrame } from "@react-three/fiber";
 import { Text } from "@react-three/drei";
 import * as THREE from "three";
 import { useSpeechRecognition } from "../hooks/useSpeechRecognition";
 import type { UseSpeechRecognitionOptions } from "../hooks/useSpeechRecognition";
+import { useVoiceInputTransform } from "@/features/voice-input";
+import type { VoiceInput } from "@repo/schema";
 
 export interface MicrophoneHandle {
   /** 音声認識を開始 */
@@ -39,6 +41,12 @@ export interface MicrophoneProps {
   maxTextWidth?: number;
   /** テキストのフォントサイズ */
   textFontSize?: number;
+  /** 音声変換APIを有効にするかどうか */
+  enableVoiceTransform?: boolean;
+  /** 変換結果を表示するかどうか */
+  showTransformResult?: boolean;
+  /** 変換結果表示の位置オフセット */
+  transformResultPosition?: [number, number, number];
 }
 
 const Microphone = forwardRef<MicrophoneHandle, MicrophoneProps>(
@@ -54,10 +62,44 @@ const Microphone = forwardRef<MicrophoneHandle, MicrophoneProps>(
       showText = true,
       maxTextWidth = 2,
       textFontSize = 0.1,
+      enableVoiceTransform = true,
+      showTransformResult = true,
+      transformResultPosition = [0, 2, 0],
     },
     ref,
   ) => {
     const meshRef = useRef<THREE.Mesh>(null);
+    const [transformedData, setTransformedData] = useState<VoiceInput | null>(null);
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+    const { mutate: transformVoice, isPending } = useVoiceInputTransform();
+
+    const handleRecordingComplete = (transcript: string) => {
+      if (!enableVoiceTransform || !transcript || transcript.trim() === "") {
+        return;
+      }
+
+      setErrorMessage(null);
+      transformVoice(
+        { text: transcript },
+        {
+          onSuccess: (response) => {
+            if (response.success) {
+              setTransformedData(response.data);
+              console.log("変換成功:", response.data);
+            } else {
+              setErrorMessage(response.error);
+              console.error("変換エラー:", response.error);
+            }
+          },
+          onError: (error) => {
+            const errorMsg = error instanceof Error ? error.message : "Unknown error";
+            setErrorMessage(errorMsg);
+            console.error("API呼び出しエラー:", errorMsg);
+          },
+        },
+      );
+    };
 
     const {
       transcript,
@@ -68,7 +110,10 @@ const Microphone = forwardRef<MicrophoneHandle, MicrophoneProps>(
       start,
       stop,
       resetTranscript,
-    } = useSpeechRecognition(speechRecognitionOptions);
+    } = useSpeechRecognition({
+      ...speechRecognitionOptions,
+      onRecordingComplete: enableVoiceTransform ? handleRecordingComplete : speechRecognitionOptions?.onRecordingComplete,
+    });
 
     useImperativeHandle(
       ref,
@@ -147,6 +192,47 @@ const Microphone = forwardRef<MicrophoneHandle, MicrophoneProps>(
             textAlign="center"
           >
             {displayText}
+          </Text>
+        )}
+        {/* Display loading state */}
+        {enableVoiceTransform && showTransformResult && isPending && (
+          <Text
+            position={transformResultPosition}
+            fontSize={0.15}
+            color="blue"
+            anchorX="center"
+            anchorY="middle"
+          >
+            変換中...
+          </Text>
+        )}
+        {/* Display transformed data */}
+        {enableVoiceTransform && showTransformResult && transformedData && !isPending && (
+          <Text
+            position={transformResultPosition}
+            fontSize={0.12}
+            color="green"
+            anchorX="center"
+            anchorY="middle"
+            maxWidth={3}
+          >
+            {`駒: ${transformedData.piece}`}
+            {transformedData.from && `\nFrom: ${transformedData.from}`}
+            {transformedData.to && `\nTo: ${transformedData.to}`}
+            {transformedData.order && `\n命令: ${transformedData.order}`}
+          </Text>
+        )}
+        {/* Display error message */}
+        {enableVoiceTransform && showTransformResult && errorMessage && !isPending && (
+          <Text
+            position={transformResultPosition}
+            fontSize={0.12}
+            color="red"
+            anchorX="center"
+            anchorY="middle"
+            maxWidth={3}
+          >
+            {`エラー: ${errorMessage}`}
           </Text>
         )}
       </group>
