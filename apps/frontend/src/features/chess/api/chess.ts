@@ -8,6 +8,7 @@ export async function fetch(): Promise<UsersResponse> {
 }
 
 export async function resolveAction(
+  piece_id: number,
   pieces: Piece[],
   from: string,
   to: string,
@@ -15,6 +16,7 @@ export async function resolveAction(
 ): Promise<AIResponse> {
   const response = await client.v1.resolveAction.$post({
     json: {
+      piece_id: piece_id, 
       pieces: pieces,
       from: from,
       to: to,
