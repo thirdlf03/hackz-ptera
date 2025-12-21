@@ -209,9 +209,11 @@ async function MoveCommand(
   command: VoiceInput | null,
   startAnimation: (id: number, from: Position, to: Position) => void,
   turn: string,
-  setTextLocation: (text: string, x: number, y: number, z: number) => void
+  setTextLocation: (text: string, x: number, y: number, z: number) => void,
+  changeTurn: () => void
 ): Promise<Piece[]> {
   const [pieceID, toPosition] = LinkVoiceAndId(pieces, command, turn);
+  let attack = true;
 
   if (pieceID === -1 || !toPosition) return pieces;
   if (!command) return [];
@@ -235,6 +237,7 @@ async function MoveCommand(
     );
     console.log(response);
     setTextLocation(response.reason, piece.position.x!, piece.position.y!, piece.position.z! + 2);
+    attack = response.attack;
     command.to = response.to;
   };
 
@@ -245,17 +248,40 @@ async function MoveCommand(
     return [];
   }
 
-  return pieces.map((piece) => {
-    if (piece.id === pieceID) {
-      // アニメーション開始
-      startAnimation(piece.id, piece.position, newToPosition);
-      console.log(piece);
+  // 移動先に敵の駒がいるかチェック
+  const targetPiece = pieces.find(
+    (p) =>
+      p.exist &&
+      p.position.x === newToPosition.x &&
+      p.position.y === newToPosition.y &&
+      p.position.z === newToPosition.z &&
+      p.color !== piece.color
+  );
+
+  // 敵の駒がいて、attackがfalseの場合は移動しない
+  if (targetPiece && !attack) {
+    console.log("attackがfalseのため移動しません");
+    changeTurn();
+    return pieces;
+  }
+
+  return pieces.map((p) => {
+    if (p.id === pieceID) {
+      startAnimation(p.id, p.position, newToPosition);
       return {
-        ...piece,
-        position: toPosition,
+        ...p,
+        position: newToPosition,
       };
     }
-    return piece;
+    // 敵の駒がいて、attackがtrueの場合は倒す
+    if (targetPiece && p.id === targetPiece.id && attack) {
+      console.log("駒を倒しました:", p);
+      return {
+        ...p,
+        exist: false,
+      };
+    }
+    return p;
   });
 }
 
@@ -264,7 +290,7 @@ const ChessPieces = ({ command }: { command: VoiceInput | null }) => {
   const { startAnimation } = useAnimationStore();
   const { setTextLocation } = useTextLocationStore();
   const initialized = useRef(false);
-  const { turn } = useTurnStore();
+  const { turn, change: changeTurn } = useTurnStore();
 
   useEffect(() => {
     if (initialized.current) return;
@@ -302,7 +328,8 @@ const ChessPieces = ({ command }: { command: VoiceInput | null }) => {
           command,
           startAnimation,
           turn,
-          setTextLocation
+          setTextLocation,
+          changeTurn
         );
         console.log("turn確認", command);
         setPieces(newPieces);
@@ -311,7 +338,7 @@ const ChessPieces = ({ command }: { command: VoiceInput | null }) => {
       }, [command, startAnimation, setTextLocation]);
   return (
     <>
-      {pieces.map((piece) => (
+      {pieces.filter((piece) => piece.exist).map((piece) => (
         <ChooseFromSixPieces key={piece.id} piece={piece} />
       ))}
     </>
