@@ -2,7 +2,7 @@ import type { Piece, Position, Personality } from "@repo/schema";
 import ChooseFromSixPieces from "./ChooseFromSixPieces";
 import { useEffect, useState, useRef } from "react";
 import type { VoiceInput } from "@repo/schema";
-import { useAnimationStore } from "./store";
+import { useAnimationStore, useTextLocationStore } from "./store";
 import { initGame, resolveAction } from "../api/chess";
 import { createUser } from "../../users/api/users";
 
@@ -180,10 +180,11 @@ function LinkVoiceAndId(
   return [piece.id, toPosition];
 }
 
-async function MoveCommand  (
+async function MoveCommand(
   pieces: Piece[],
   command: VoiceInput | null,
   startAnimation: (id: number, from: Position, to: Position) => void,
+  setTextLocation: (text: string, x: number, y: number, z: number) => void,
 ): Promise<Piece[]> {
   const [pieceID, toPosition] = LinkVoiceAndId(pieces, command);
 
@@ -196,37 +197,39 @@ async function MoveCommand  (
 
   if (!location || !fromLocation || !toLocation) return [];
 
+  const piece = pieces.find((p) => p.id === pieceID);
+  if (!piece) return [];
+
   const getPieceCommand = async () => {
-    const response = await resolveAction(pieceID, pieces, fromLocation, toLocation, "hogehoge")
-    console.log(response);
-    command.to = response.to
+    const response = await resolveAction(pieceID, pieces, fromLocation, toLocation, "hogehoge");
+    setTextLocation(response.reason, piece.position.x!, piece.position.y!, piece.position.z! + 2);
+    command.to = response.to;
   };
 
-  await getPieceCommand()
+  await getPieceCommand();
   const [_, newToPosition] = LinkVoiceAndId(pieces, command);
 
   if (!newToPosition) {
-    return []
+    return [];
   }
 
-  
-  return pieces.map((piece) => {
-    if (piece.id === pieceID) {
-      // アニメーション開始
-      startAnimation(piece.id, piece.position, newToPosition);
-      console.log(piece)
+  return pieces.map((p) => {
+    if (p.id === pieceID) {
+      startAnimation(p.id, p.position, newToPosition);
+      console.log(p);
       return {
-        ...piece,
+        ...p,
         position: toPosition,
       };
     }
-    return piece;
+    return p;
   });
 }
 
 const ChessPieces = ({ command }: { command: VoiceInput | null }) => {
   const [pieces, setPieces] = useState<Piece[]>([]);
   const { startAnimation } = useAnimationStore();
+  const { setTextLocation } = useTextLocationStore();
   const initialized = useRef(false);
 
   useEffect(() => {
@@ -236,10 +239,10 @@ const ChessPieces = ({ command }: { command: VoiceInput | null }) => {
     const initializeGame = async () => {
       try {
         const playerResponse = await createUser("player");
-        const playerId = playerResponse.userId
+        const playerId = playerResponse.userId;
 
         const enemyResponse = await createUser("enemy");
-        const enemyId = enemyResponse.userId
+        const enemyId = enemyResponse.userId;
 
         const gameResponse = await initGame({
           player_id: playerId,
@@ -260,11 +263,11 @@ const ChessPieces = ({ command }: { command: VoiceInput | null }) => {
   useEffect(() => {
     if (command) {
       (async () => {
-        const newPieces = await MoveCommand(pieces, command, startAnimation);
+        const newPieces = await MoveCommand(pieces, command, startAnimation, setTextLocation);
         setPieces(newPieces);
       })();
     }
-  }, [command, startAnimation]);
+  }, [command, startAnimation, setTextLocation]);
 
   return (
     <>

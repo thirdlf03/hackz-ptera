@@ -1,6 +1,6 @@
 import { Group, Vector3 } from "three";
 import type { Piece } from "@repo/schema";
-import { useAnimationStore, useTurnStore } from "./store";
+import { useAnimationStore, useTurnStore, useTextLocationStore } from "./store";
 import { useFrame } from "@react-three/fiber";
 import { useRef, useEffect } from "react";
 import * as THREE from "three";
@@ -184,9 +184,10 @@ const ChooseFromSixPieces = ({ piece }: ChessPieceProps) => {
   const groupRef = useRef<Group>(null);
   const { animatingPiece, clearAnimation } = useAnimationStore();
   const { change: changeTurn } = useTurnStore();
+  const { clearText } = useTextLocationStore();
 
   const threeColor = new THREE.Color(
-    color === "white" ? "rgba(205, 188, 139, 1)" : "hsla(37, 68%, 24%, 1.00)"
+    color === "white" ? "rgba(205, 188, 139, 1)" : "hsla(37, 68%, 24%, 1.00)",
   );
 
   // この駒がアニメーション対象かどうか
@@ -216,6 +217,7 @@ const ChooseFromSixPieces = ({ piece }: ChessPieceProps) => {
       if (groupRef.current.position.distanceTo(target) < 0.01) {
         groupRef.current.position.copy(target); // 正確な位置にスナップ
         clearAnimation();
+        clearText();
         changeTurn(); // ターン切り替え
       }
     }

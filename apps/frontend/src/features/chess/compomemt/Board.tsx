@@ -1,10 +1,10 @@
-import { Line, Loader } from "@react-three/drei";
+import { Line, Loader, Text } from "@react-three/drei";
 import { OrbitControls } from "@react-three/drei";
 import ChessPieces from "./ChessPieces";
 import { Microphone } from "@/features/microphone";
 import { useState } from "react";
 import type { VoiceInput } from "@repo/schema";
-import { useTurnStore } from "./store";
+import { useTurnStore, useTextLocationStore } from "./store";
 import Mark from "./Mark";
 
 import * as THREE from "three";
@@ -15,12 +15,30 @@ interface BoardProps {
   className?: string;
 }
 
+function PieceText() {
+  const { text, x, y, z } = useTextLocationStore();
+
+  if (!text) return null;
+
+  return (
+    <Text
+      position={[x, y, z]}
+      fontSize={0.15}
+      color="white"
+      anchorX="center"
+      anchorY="bottom"
+      outlineWidth={0.01}
+      outlineColor="black"
+    >
+      {text}
+    </Text>
+  );
+}
+
 function ChessLine() {
   const squares = [];
   const squareSize = 0.6; // 1マスのサイズ
-  const borderColor = new THREE.Color(
-    "rgba(228, 221, 209, 1)"
-  ).convertSRGBToLinear();
+  const borderColor = new THREE.Color("rgba(228, 221, 209, 1)").convertSRGBToLinear();
 
   for (let row = 0; row < 8; row++) {
     for (let col = 0; col < 8; col++) {
@@ -58,10 +76,9 @@ function ChessLine() {
     </>
   );
 }
-const Board: React.FC<BoardProps> = ({}) => {
+const Board: React.FC<BoardProps> = () => {
   const [commanddata, setCommanddata] = useState<VoiceInput | null>(null);
   const { turn } = useTurnStore();
-
   return (
     <>
       <OrbitControls />
@@ -97,10 +114,11 @@ const Board: React.FC<BoardProps> = ({}) => {
         <mesh>
           <planeGeometry args={[6, 6]} />
           <Mark color={turn} />
-          <meshPhongMaterial color='rgba(173, 138, 41, 1)' />
+          <meshPhongMaterial color="rgba(173, 138, 41, 1)" />
         </mesh>
         <ChessLine />
         <ChessPieces command={commanddata} />
+        <PieceText />
       </group>
     </>
   );

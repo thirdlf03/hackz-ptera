@@ -8,7 +8,7 @@ import "@/App.css";
 function App() {
   return (
     <>
-      <div className='app-container'>
+      <div className="app-container">
         <Canvas>
           {/* ライトをCanvas直下に配置 */}
           <directionalLight position={[0, 0, 15]} />
@@ -16,7 +16,7 @@ function App() {
 
           <Center position={[0, 3.1, 0.3]}>
             <Text3D
-              font='https://threejs.org/examples/fonts/helvetiker_regular.typeface.json'
+              font="https://threejs.org/examples/fonts/helvetiker_regular.typeface.json"
               size={0.5}
               height={0.1}
               bevelEnabled={true} // ベベルを有効化
@@ -25,13 +25,11 @@ function App() {
             >
               AI Chess
               {/* マテリアルを追加 */}
-              <meshStandardMaterial
-                color={new THREE.Color("rgba(249, 209, 8, 1)")}
-              />
+              <meshStandardMaterial color={new THREE.Color("rgba(249, 209, 8, 1)")} />
             </Text3D>
           </Center>
 
-          <Board className='container-3d' />
+          <Board className="container-3d" />
         </Canvas>
       </div>
     </>
