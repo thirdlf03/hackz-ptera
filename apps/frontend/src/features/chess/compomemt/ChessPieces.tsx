@@ -5,6 +5,7 @@ import type { VoiceInput } from "@repo/schema";
 import { useAnimationStore, useTextLocationStore } from "./store";
 import { initGame, resolveAction } from "../api/chess";
 import { createUser } from "../../users/api/users";
+import { useTurnStore } from "./store";
 
 const squareSize = 0.6;
 const boardToWorld = (col: number, row: number): Position => ({
@@ -149,16 +150,39 @@ const vectors = new Map<string, Position>([
 function LinkVoiceAndId(
   pieces: Piece[],
   command: VoiceInput | null,
+  turn: string
 ): [Piece["id"], Position | null] {
   if (!command) return [-1, null];
-
+  const gameTurn = turn;
+  console.log("現在のターン:", gameTurn);
   const location = command.from?.toUpperCase();
   const toLocation = command.to?.toUpperCase();
 
   if (!location || !toLocation) return [-1, null];
-
-  const fromPosition = vectors.get(location);
-  const toPosition = vectors.get(toLocation);
+  let fromPosition = vectors.get(location);
+  let toPosition = vectors.get(toLocation);
+  if (gameTurn === "black") {
+    console.log("黒のターンです");
+    const PrefromPosition = vectors.get(location);
+    const PretoPosition = vectors.get(toLocation);
+    fromPosition = PrefromPosition
+      ? {
+          x: -PrefromPosition.x!,
+          y: -PrefromPosition.y!,
+          z: PrefromPosition.z,
+        }
+      : undefined;
+    toPosition = PretoPosition
+      ? {
+          x: -PretoPosition.x!,
+          y: -PretoPosition.y!,
+          z: PretoPosition.z,
+        }
+      : undefined;
+  } else {
+    [fromPosition, toPosition!];
+  }
+  // 黒のときは座標を反転させる
 
   if (!fromPosition || !toPosition) {
     console.log("無効な位置です");
@@ -169,7 +193,7 @@ function LinkVoiceAndId(
     (p) =>
       p.position.x === fromPosition.x &&
       p.position.y === fromPosition.y &&
-      p.position.z === fromPosition.z,
+      p.position.z === fromPosition.z
   );
 
   if (!piece) {
@@ -184,9 +208,10 @@ async function MoveCommand(
   pieces: Piece[],
   command: VoiceInput | null,
   startAnimation: (id: number, from: Position, to: Position) => void,
-  setTextLocation: (text: string, x: number, y: number, z: number) => void,
+  turn: string,
+  setTextLocation: (text: string, x: number, y: number, z: number) => void
 ): Promise<Piece[]> {
-  const [pieceID, toPosition] = LinkVoiceAndId(pieces, command);
+  const [pieceID, toPosition] = LinkVoiceAndId(pieces, command, turn);
 
   if (pieceID === -1 || !toPosition) return pieces;
   if (!command) return [];
@@ -201,28 +226,36 @@ async function MoveCommand(
   if (!piece) return [];
 
   const getPieceCommand = async () => {
-    const response = await resolveAction(pieceID, pieces, fromLocation, toLocation, "hogehoge");
+    const response = await resolveAction(
+      pieceID,
+      pieces,
+      fromLocation,
+      toLocation,
+      "hogehoge"
+    );
+    console.log(response);
     setTextLocation(response.reason, piece.position.x!, piece.position.y!, piece.position.z! + 2);
     command.to = response.to;
   };
 
   await getPieceCommand();
-  const [_, newToPosition] = LinkVoiceAndId(pieces, command);
+  const [_, newToPosition] = LinkVoiceAndId(pieces, command, turn);
 
   if (!newToPosition) {
     return [];
   }
 
-  return pieces.map((p) => {
-    if (p.id === pieceID) {
-      startAnimation(p.id, p.position, newToPosition);
-      console.log(p);
+  return pieces.map((piece) => {
+    if (piece.id === pieceID) {
+      // アニメーション開始
+      startAnimation(piece.id, piece.position, newToPosition);
+      console.log(piece);
       return {
-        ...p,
+        ...piece,
         position: toPosition,
       };
     }
-    return p;
+    return piece;
   });
 }
 
@@ -231,6 +264,7 @@ const ChessPieces = ({ command }: { command: VoiceInput | null }) => {
   const { startAnimation } = useAnimationStore();
   const { setTextLocation } = useTextLocationStore();
   const initialized = useRef(false);
+  const { turn } = useTurnStore();
 
   useEffect(() => {
     if (initialized.current) return;
@@ -263,12 +297,18 @@ const ChessPieces = ({ command }: { command: VoiceInput | null }) => {
   useEffect(() => {
     if (command) {
       (async () => {
-        const newPieces = await MoveCommand(pieces, command, startAnimation, setTextLocation);
+        const newPieces = await MoveCommand(
+          pieces,
+          command,
+          startAnimation,
+          turn,
+          setTextLocation
+        );
+        console.log("turn確認", command);
         setPieces(newPieces);
-      })();
-    }
-  }, [command, startAnimation, setTextLocation]);
-
+          })();
+        }
+      }, [command, startAnimation, setTextLocation]);
   return (
     <>
       {pieces.map((piece) => (
