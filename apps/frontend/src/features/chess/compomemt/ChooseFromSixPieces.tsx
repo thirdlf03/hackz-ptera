@@ -9,19 +9,18 @@ interface ChessPieceProps {
   piece: Piece;
 }
 
-// ポーン
 function Pawn({ color }: { color: THREE.Color }) {
   return (
     <group rotation={[Math.PI / 2, 0, 0]}>
-      <mesh position={[0, 0.05, 0]}>
-        <cylinderGeometry args={[0.2, 0.22, 0.1, 16]} />
+      <mesh position={[0, 0.065, 0]}>
+        <cylinderGeometry args={[0.2, 0.22, 0.13, 16]} />
         <meshStandardMaterial color={color} />
       </mesh>
-      <mesh position={[0, 0.25, 0]}>
-        <cylinderGeometry args={[0.08, 0.15, 0.3, 16]} />
+      <mesh position={[0, 0.325, 0]}>
+        <cylinderGeometry args={[0.08, 0.15, 0.39, 16]} />
         <meshStandardMaterial color={color} />
       </mesh>
-      <mesh position={[0, 0.5, 0]}>
+      <mesh position={[0, 0.65, 0]}>
         <sphereGeometry args={[0.12, 16, 16]} />
         <meshStandardMaterial color={color} />
       </mesh>
@@ -33,16 +32,16 @@ function Pawn({ color }: { color: THREE.Color }) {
 function Rook({ color }: { color: THREE.Color }) {
   return (
     <group rotation={[Math.PI / 2, 0, 0]}>
-      <mesh position={[0, 0.05, 0]}>
-        <cylinderGeometry args={[0.22, 0.24, 0.1, 16]} />
+      <mesh position={[0, 0.065, 0]}>
+        <cylinderGeometry args={[0.22, 0.24, 0.13, 16]} />
         <meshStandardMaterial color={color} />
       </mesh>
-      <mesh position={[0, 0.3, 0]}>
-        <cylinderGeometry args={[0.12, 0.18, 0.4, 16]} />
+      <mesh position={[0, 0.39, 0]}>
+        <cylinderGeometry args={[0.12, 0.18, 0.52, 16]} />
         <meshStandardMaterial color={color} />
       </mesh>
-      <mesh position={[0, 0.55, 0]}>
-        <cylinderGeometry args={[0.18, 0.14, 0.1, 16]} />
+      <mesh position={[0, 0.715, 0]}>
+        <cylinderGeometry args={[0.18, 0.14, 0.13, 16]} />
         <meshStandardMaterial color={color} />
       </mesh>
       {[0, 90, 180, 270].map((angle) => (
@@ -50,11 +49,11 @@ function Rook({ color }: { color: THREE.Color }) {
           key={angle}
           position={[
             Math.cos((angle * Math.PI) / 180) * 0.12,
-            0.65,
+            0.845,
             Math.sin((angle * Math.PI) / 180) * 0.12,
           ]}
         >
-          <boxGeometry args={[0.08, 0.1, 0.08]} />
+          <boxGeometry args={[0.08, 0.13, 0.08]} />
           <meshStandardMaterial color={color} />
         </mesh>
       ))}
@@ -66,24 +65,24 @@ function Rook({ color }: { color: THREE.Color }) {
 function Knight({ color }: { color: THREE.Color }) {
   return (
     <group rotation={[Math.PI / 2, 0, 0]}>
-      <mesh position={[0, 0.05, 0]}>
-        <cylinderGeometry args={[0.22, 0.24, 0.1, 16]} />
+      <mesh position={[0, 0.065, 0]}>
+        <cylinderGeometry args={[0.22, 0.24, 0.13, 16]} />
         <meshStandardMaterial color={color} />
       </mesh>
-      <mesh position={[0, 0.35, -0.05]} rotation={[-0.3, 0, 0]}>
-        <boxGeometry args={[0.15, 0.4, 0.25]} />
+      <mesh position={[0, 0.455, -0.05]} rotation={[-0.3, 0, 0]}>
+        <boxGeometry args={[0.15, 0.52, 0.25]} />
         <meshStandardMaterial color={color} />
       </mesh>
-      <mesh position={[0, 0.55, -0.15]} rotation={[-0.5, 0, 0]}>
-        <boxGeometry args={[0.12, 0.15, 0.3]} />
+      <mesh position={[0, 0.715, -0.15]} rotation={[-0.5, 0, 0]}>
+        <boxGeometry args={[0.12, 0.195, 0.3]} />
         <meshStandardMaterial color={color} />
       </mesh>
-      <mesh position={[0.05, 0.65, -0.1]} rotation={[-0.3, 0, 0.2]}>
-        <boxGeometry args={[0.04, 0.1, 0.06]} />
+      <mesh position={[0.05, 0.845, -0.1]} rotation={[-0.3, 0, 0.2]}>
+        <boxGeometry args={[0.04, 0.13, 0.06]} />
         <meshStandardMaterial color={color} />
       </mesh>
-      <mesh position={[-0.05, 0.65, -0.1]} rotation={[-0.3, 0, -0.2]}>
-        <boxGeometry args={[0.04, 0.1, 0.06]} />
+      <mesh position={[-0.05, 0.845, -0.1]} rotation={[-0.3, 0, -0.2]}>
+        <boxGeometry args={[0.04, 0.13, 0.06]} />
         <meshStandardMaterial color={color} />
       </mesh>
     </group>
@@ -94,19 +93,19 @@ function Knight({ color }: { color: THREE.Color }) {
 function Bishop({ color }: { color: THREE.Color }) {
   return (
     <group rotation={[Math.PI / 2, 0, 0]}>
-      <mesh position={[0, 0.05, 0]}>
-        <cylinderGeometry args={[0.22, 0.24, 0.1, 16]} />
+      <mesh position={[0, 0.065, 0]}>
+        <cylinderGeometry args={[0.22, 0.24, 0.13, 16]} />
         <meshStandardMaterial color={color} />
       </mesh>
-      <mesh position={[0, 0.3, 0]}>
-        <cylinderGeometry args={[0.1, 0.18, 0.4, 16]} />
+      <mesh position={[0, 0.39, 0]}>
+        <cylinderGeometry args={[0.1, 0.18, 0.52, 16]} />
         <meshStandardMaterial color={color} />
       </mesh>
-      <mesh position={[0, 0.55, 0]}>
-        <coneGeometry args={[0.12, 0.25, 16]} />
+      <mesh position={[0, 0.715, 0]}>
+        <coneGeometry args={[0.12, 0.325, 16]} />
         <meshStandardMaterial color={color} />
       </mesh>
-      <mesh position={[0, 0.72, 0]}>
+      <mesh position={[0, 0.936, 0]}>
         <sphereGeometry args={[0.05, 16, 16]} />
         <meshStandardMaterial color={color} />
       </mesh>
@@ -118,16 +117,16 @@ function Bishop({ color }: { color: THREE.Color }) {
 function Queen({ color }: { color: THREE.Color }) {
   return (
     <group rotation={[Math.PI / 2, 0, 0]}>
-      <mesh position={[0, 0.05, 0]}>
-        <cylinderGeometry args={[0.24, 0.26, 0.1, 16]} />
+      <mesh position={[0, 0.065, 0]}>
+        <cylinderGeometry args={[0.24, 0.26, 0.13, 16]} />
         <meshStandardMaterial color={color} />
       </mesh>
-      <mesh position={[0, 0.35, 0]}>
-        <cylinderGeometry args={[0.1, 0.2, 0.5, 16]} />
+      <mesh position={[0, 0.455, 0]}>
+        <cylinderGeometry args={[0.1, 0.2, 0.65, 16]} />
         <meshStandardMaterial color={color} />
       </mesh>
-      <mesh position={[0, 0.65, 0]}>
-        <cylinderGeometry args={[0.14, 0.1, 0.1, 16]} />
+      <mesh position={[0, 0.845, 0]}>
+        <cylinderGeometry args={[0.14, 0.1, 0.13, 16]} />
         <meshStandardMaterial color={color} />
       </mesh>
       {[0, 72, 144, 216, 288].map((angle) => (
@@ -135,7 +134,7 @@ function Queen({ color }: { color: THREE.Color }) {
           key={angle}
           position={[
             Math.cos((angle * Math.PI) / 180) * 0.1,
-            0.75,
+            0.975,
             Math.sin((angle * Math.PI) / 180) * 0.1,
           ]}
         >
@@ -143,7 +142,7 @@ function Queen({ color }: { color: THREE.Color }) {
           <meshStandardMaterial color={color} />
         </mesh>
       ))}
-      <mesh position={[0, 0.8, 0]}>
+      <mesh position={[0, 1.04, 0]}>
         <sphereGeometry args={[0.06, 16, 16]} />
         <meshStandardMaterial color={color} />
       </mesh>
@@ -155,24 +154,24 @@ function Queen({ color }: { color: THREE.Color }) {
 function King({ color }: { color: THREE.Color }) {
   return (
     <group rotation={[Math.PI / 2, 0, 0]}>
-      <mesh position={[0, 0.05, 0]}>
-        <cylinderGeometry args={[0.24, 0.26, 0.1, 16]} />
+      <mesh position={[0, 0.065, 0]}>
+        <cylinderGeometry args={[0.24, 0.26, 0.13, 16]} />
         <meshStandardMaterial color={color} />
       </mesh>
-      <mesh position={[0, 0.35, 0]}>
-        <cylinderGeometry args={[0.1, 0.2, 0.5, 16]} />
+      <mesh position={[0, 0.455, 0]}>
+        <cylinderGeometry args={[0.1, 0.2, 0.65, 16]} />
         <meshStandardMaterial color={color} />
       </mesh>
-      <mesh position={[0, 0.65, 0]}>
-        <cylinderGeometry args={[0.12, 0.1, 0.1, 16]} />
+      <mesh position={[0, 0.845, 0]}>
+        <cylinderGeometry args={[0.12, 0.1, 0.13, 16]} />
         <meshStandardMaterial color={color} />
       </mesh>
-      <mesh position={[0, 0.8, 0]}>
-        <boxGeometry args={[0.04, 0.2, 0.04]} />
+      <mesh position={[0, 1.04, 0]}>
+        <boxGeometry args={[0.04, 0.26, 0.04]} />
         <meshStandardMaterial color={color} />
       </mesh>
-      <mesh position={[0, 0.85, 0]}>
-        <boxGeometry args={[0.12, 0.04, 0.04]} />
+      <mesh position={[0, 1.105, 0]}>
+        <boxGeometry args={[0.12, 0.052, 0.04]} />
         <meshStandardMaterial color={color} />
       </mesh>
     </group>

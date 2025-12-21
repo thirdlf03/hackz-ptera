@@ -77,7 +77,7 @@ const Board: React.FC<BoardProps> = ({}) => {
           }}
           onListeningChange={(listening) => console.log("録音中:", listening)}
           onError={(err) => console.error(err)}
-          position={[0, 1.5, 5]}
+          position={[3, 0.8, 1.8]}
         />
       )}
       {turn == "black" && (
@@ -89,7 +89,7 @@ const Board: React.FC<BoardProps> = ({}) => {
           }}
           onListeningChange={(listening) => console.log("録音中:", listening)}
           onError={(err) => console.error(err)}
-          position={[0, 1.5, 5]}
+          position={[3, 0.8, 1.8]}
         />
       )}
 
