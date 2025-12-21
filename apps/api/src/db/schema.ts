@@ -1,4 +1,4 @@
-import { sqliteTable, text, integer, check, real } from "drizzle-orm/sqlite-core";
+import { sqliteTable, foreignKey, text, integer, check, real } from "drizzle-orm/sqlite-core";
 import { sql } from "drizzle-orm";
 
 export const users = sqliteTable("users", {
@@ -28,6 +28,26 @@ export const games = sqliteTable(
       "winner_check",
       sql`${table.winner} IN ('player', 'enemy', 'draw') OR ${table.winner} IS NULL`,
     ),
+  ],
+);
+
+export const logs = sqliteTable(
+  "logs",
+  {
+    id: integer().primaryKey({ autoIncrement: true }),
+    game_id: integer().notNull(),
+    from: text().notNull(),
+    to: text().notNull(),
+    attack: integer().notNull(),
+    reason: text(),
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.game_id],
+      foreignColumns: [games.id],
+      name: "logs_game_id_fk",
+    }),
+    check("attack_check", sql`${table.attack} IN (0, 1)`),
   ],
 );
 

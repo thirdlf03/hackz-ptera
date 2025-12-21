@@ -1,5 +1,4 @@
-import type { AIResponse, ResolveActionInput } from "@repo/schema";
-
+import { type AIResponse, type ResolveActionInput } from "@repo/schema";
 export async function resolveAction(input: ResolveActionInput): Promise<AIResponse> {
   console.log("=== AWS API Call Start ===");
   console.log("Input:", JSON.stringify(input, null, 2));

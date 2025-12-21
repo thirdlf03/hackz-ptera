@@ -8,3 +8,4 @@ export * from "./backend-chess";
 export * from "./resolve-action";
 export * from "./initGame";
 export * from "./recodeWinner";
+export * from "./chess-log";

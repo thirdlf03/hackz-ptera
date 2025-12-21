@@ -9,6 +9,7 @@ import {
   initGameSchema,
   UserCreatedInputSchema,
   RecodeWinnerSchema,
+  chessLogSchema,
 } from "@repo/schema";
 import { createGeminiClient } from "./lib/gemini";
 import { transformVoiceInput } from "./lib/voice-input-transformer";
@@ -17,6 +18,7 @@ import { drizzle } from "drizzle-orm/d1";
 import { eq } from "drizzle-orm";
 import { users, games } from "./db/schema";
 import { createGame } from "./lib/create-game";
+import { saveLog } from "./lib/save-log";
 
 type Bindings = {
   ASSETS: Fetcher;
@@ -79,8 +81,18 @@ const api = new Hono<{ Bindings: Bindings }>()
       const input = c.req.valid("json");
       const result = await resolveAction(input);
 
-      // TODO: 201
-      return c.json(result, 200);
+      const log = chessLogSchema.parse({
+        game_id: input.game_id,
+        from: result.from,
+        to: result.to,
+        attack: result.attack,
+        reason: result.reason,
+      });
+      console.log("Saving log:", log);
+      const db = drizzle(c.env.DB);
+      const savedLog = await saveLog(log, db);
+
+      return c.json(savedLog, 201);
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "Unknown error occurred";
       return c.json({ error: errorMessage }, 500);

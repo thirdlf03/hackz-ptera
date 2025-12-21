@@ -6,6 +6,7 @@ import { PieceSchema } from "./chess";
  * Input: { from: "g4", to: "f6", order: "命令" }
  */
 export const ResolveActionInputSchema = z.object({
+  game_id: z.number(),
   piece_id: z.int().min(0).max(31),
   pieces: z.array(PieceSchema),
   from: z.string().regex(/^[a-h][1-8]$/, "Must be a valid chess position (e.g., 'g4')"),
