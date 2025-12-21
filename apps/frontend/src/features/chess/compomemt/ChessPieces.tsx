@@ -2,7 +2,7 @@ import type { Piece, Position, Personality } from "@repo/schema";
 import ChooseFromSixPieces from "./ChooseFromSixPieces";
 import { useEffect, useState, useRef } from "react";
 import type { VoiceInput } from "@repo/schema";
-import { useAnimationStore } from "./store";
+import { useAnimationStore, useTextLocationStore } from "./store";
 import { initGame, resolveAction } from "../api/chess";
 import { createUser } from "../../users/api/users";
 import { useTurnStore } from "./store";
@@ -209,6 +209,7 @@ async function MoveCommand(
   command: VoiceInput | null,
   startAnimation: (id: number, from: Position, to: Position) => void,
   turn: string
+  setTextLocation: (text: string, x: number, y: number, z: number) => void,
 ): Promise<Piece[]> {
   const [pieceID, toPosition] = LinkVoiceAndId(pieces, command, turn);
 
@@ -221,6 +222,9 @@ async function MoveCommand(
 
   if (!location || !fromLocation || !toLocation) return [];
 
+  const piece = pieces.find((p) => p.id === pieceID);
+  if (!piece) return [];
+
   const getPieceCommand = async () => {
     const response = await resolveAction(
       pieceID,
@@ -230,6 +234,7 @@ async function MoveCommand(
       "hogehoge"
     );
     console.log(response);
+    setTextLocation(response.reason, piece.position.x!, piece.position.y!, piece.position.z! + 2);
     command.to = response.to;
   };
 
@@ -246,17 +251,18 @@ async function MoveCommand(
       startAnimation(piece.id, piece.position, newToPosition);
       console.log(piece);
       return {
-        ...piece,
+        ...p,
         position: toPosition,
       };
     }
-    return piece;
+    return p;
   });
 }
 
 const ChessPieces = ({ command }: { command: VoiceInput | null }) => {
   const [pieces, setPieces] = useState<Piece[]>([]);
   const { startAnimation } = useAnimationStore();
+  const { setTextLocation } = useTextLocationStore();
   const initialized = useRef(false);
   const { turn } = useTurnStore();
 
@@ -294,15 +300,15 @@ const ChessPieces = ({ command }: { command: VoiceInput | null }) => {
         const newPieces = await MoveCommand(
           pieces,
           command,
-
           startAnimation,
-          turn
+          turn,
+          setTextLocation
         );
         console.log("turn確認", command);
         setPieces(newPieces);
-      })();
-    }
-  }, [command, startAnimation]);
+          })();
+        }
+      }, [command, startAnimation, setTextLocation]);
   return (
     <>
       {pieces.map((piece) => (
