@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { personalitySchema }from "./personality"
+import { personalitySchema } from "./personality";
 export const SixtyFourPositionSchema = z.object({
   x: z.number().optional(),
   y: z.number().optional(),

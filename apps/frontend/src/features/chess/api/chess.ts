@@ -16,7 +16,7 @@ export async function resolveAction(
 ): Promise<AIResponse> {
   const response = await client.v1.resolveAction.$post({
     json: {
-      piece_id: piece_id, 
+      piece_id: piece_id,
       pieces: pieces,
       from: from,
       to: to,

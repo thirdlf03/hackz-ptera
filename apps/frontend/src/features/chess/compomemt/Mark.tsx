@@ -1,19 +1,16 @@
 import { Text3D } from "@react-three/drei";
 import * as THREE from "three";
 
-const FONT_URL =
-  "https://threejs.org/examples/fonts/helvetiker_regular.typeface.json";
+const FONT_URL = "https://threejs.org/examples/fonts/helvetiker_regular.typeface.json";
 
 export default function Mark({ color }: { color: string }) {
   const threeColor = new THREE.Color(
-    color === "white" ? "rgba(72, 63, 36, 1)" : "hsla(37, 68%, 24%, 1.00)"
+    color === "white" ? "rgba(72, 63, 36, 1)" : "hsla(37, 68%, 24%, 1.00)",
   );
 
   const isBlack = color === "black";
   // 黒は Z軸で180度回転（文字を正しい向きに）
-  const rotation: [number, number, number] = isBlack
-    ? [0, 0, Math.PI]
-    : [0, 0, 0];
+  const rotation: [number, number, number] = isBlack ? [0, 0, Math.PI] : [0, 0, 0];
 
   // 白側の数字（左側、1が下）
   const whiteNumbers = [
