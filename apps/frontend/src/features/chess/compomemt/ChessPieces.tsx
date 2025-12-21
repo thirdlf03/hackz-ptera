@@ -208,8 +208,8 @@ async function MoveCommand(
   pieces: Piece[],
   command: VoiceInput | null,
   startAnimation: (id: number, from: Position, to: Position) => void,
-  turn: string
-  setTextLocation: (text: string, x: number, y: number, z: number) => void,
+  turn: string,
+  setTextLocation: (text: string, x: number, y: number, z: number) => void
 ): Promise<Piece[]> {
   const [pieceID, toPosition] = LinkVoiceAndId(pieces, command, turn);
 
@@ -251,11 +251,11 @@ async function MoveCommand(
       startAnimation(piece.id, piece.position, newToPosition);
       console.log(piece);
       return {
-        ...p,
+        ...piece,
         position: toPosition,
       };
     }
-    return p;
+    return piece;
   });
 }
 
