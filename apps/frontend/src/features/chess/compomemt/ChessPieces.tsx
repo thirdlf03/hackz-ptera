@@ -184,7 +184,7 @@ async function MoveCommand  (
   pieces: Piece[],
   command: VoiceInput | null,
   startAnimation: (id: number, from: Position, to: Position) => void,
-): Piece[] {
+): Promise<Piece[]> {
   const [pieceID, toPosition] = LinkVoiceAndId(pieces, command);
 
   if (pieceID === -1 || !toPosition) return pieces;
@@ -197,7 +197,7 @@ async function MoveCommand  (
   if (!location || !fromLocation || !toLocation) return [];
 
   const getPieceCommand = async () => {
-    const response = await resolveAction(pieceID, pieces, fromLocation, toLocation, "")
+    const response = await resolveAction(pieceID, pieces, fromLocation, toLocation, "hogehoge")
     console.log(response);
     command.to = response.to
   };
