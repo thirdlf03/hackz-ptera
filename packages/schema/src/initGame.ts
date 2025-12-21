@@ -10,7 +10,7 @@ export const initGameSchema = z.object({
 export type initGame = z.infer<typeof initGameSchema>;
 
 export const initGameResponseSchema = z.object({
-  game_id: z.uuid(),
+  game_id: z.number().int(),
   personalitys: z.array(personalitySchema).length(32),
 });
 

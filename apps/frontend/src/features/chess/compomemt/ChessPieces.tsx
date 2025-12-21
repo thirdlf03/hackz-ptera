@@ -1,8 +1,10 @@
-import type { Piece, Position } from "@repo/schema";
+import type { Piece, Position, Personality } from "@repo/schema";
 import ChooseFromSixPieces from "./ChooseFromSixPieces";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import type { VoiceInput } from "@repo/schema";
 import { useAnimationStore } from "./store";
+import { initGame, resolveAction } from "../api/chess";
+import { createUser } from "../../users/api/users";
 
 const squareSize = 0.6;
 const boardToWorld = (col: number, row: number): Position => ({
@@ -11,7 +13,7 @@ const boardToWorld = (col: number, row: number): Position => ({
   z: 0.03,
 });
 
-const createInitialPieces = (): Piece[] => {
+const createInitialPieces = (personalities: Personality[]): Piece[] => {
   const backRow: Piece["type"][] = [
     "rook",
     "knight",
@@ -24,6 +26,7 @@ const createInitialPieces = (): Piece[] => {
   ];
 
   const pieces: Piece[] = [];
+  let pieceIndex = 0;
 
   // 白駒 (row 0, 1)
   backRow.forEach((type, col) => {
@@ -33,7 +36,9 @@ const createInitialPieces = (): Piece[] => {
       type,
       color: "white",
       position: boardToWorld(col, 0),
+      personality: personalities[pieceIndex],
     });
+    pieceIndex++;
   });
   for (let col = 0; col < 8; col++) {
     pieces.push({
@@ -42,7 +47,9 @@ const createInitialPieces = (): Piece[] => {
       type: "pawn",
       color: "white",
       position: boardToWorld(col, 1),
+      personality: personalities[pieceIndex],
     });
+    pieceIndex++;
   }
 
   // 黒駒 (row 6, 7)
@@ -53,7 +60,9 @@ const createInitialPieces = (): Piece[] => {
       type: "pawn",
       color: "black",
       position: boardToWorld(col, 6),
+      personality: personalities[pieceIndex],
     });
+    pieceIndex++;
   }
   backRow.forEach((type, col) => {
     pieces.push({
@@ -62,7 +71,9 @@ const createInitialPieces = (): Piece[] => {
       type,
       color: "black",
       position: boardToWorld(col, 7),
+      personality: personalities[pieceIndex],
     });
+    pieceIndex++;
   });
 
   return pieces;
@@ -169,20 +180,41 @@ function LinkVoiceAndId(
   return [piece.id, toPosition];
 }
 
-function MoveCommand(
+async function MoveCommand  (
   pieces: Piece[],
   command: VoiceInput | null,
   startAnimation: (id: number, from: Position, to: Position) => void
-): Piece[] {
+): Promise<Piece[]> {
   const [pieceID, toPosition] = LinkVoiceAndId(pieces, command);
 
   if (pieceID === -1 || !toPosition) return pieces;
+  if (!command) return [];
+  console.log(command);
 
+  const fromLocation = command.from?.toLowerCase();
+  const toLocation = command.to?.toLowerCase();
+
+  if (!location || !fromLocation || !toLocation) return [];
+
+  const getPieceCommand = async () => {
+    const response = await resolveAction(pieceID, pieces, fromLocation, toLocation, "")
+    console.log(response);
+    command.to = response.to
+  };
+
+  await getPieceCommand()
+  const [_, newToPosition] = LinkVoiceAndId(pieces, command);
+
+  if (!newToPosition) {
+    return []
+  }
+
+  
   return pieces.map((piece) => {
     if (piece.id === pieceID) {
       // アニメーション開始
-      startAnimation(piece.id, piece.position, toPosition);
-
+      startAnimation(piece.id, piece.position, newToPosition);
+      console.log(piece)
       return {
         ...piece,
         position: toPosition,
@@ -193,12 +225,44 @@ function MoveCommand(
 }
 
 const ChessPieces = ({ command }: { command: VoiceInput | null }) => {
-  const [pieces, setPieces] = useState(createInitialPieces());
+  const [pieces, setPieces] = useState<Piece[]>([]);
   const { startAnimation } = useAnimationStore();
+  const initialized = useRef(false);
+
+  useEffect(() => {
+    if (initialized.current) return;
+    initialized.current = true;
+
+    const initializeGame = async () => {
+      try {
+        const playerResponse = await createUser("player");
+        const playerId = playerResponse.userId
+
+        const enemyResponse = await createUser("enemy");
+        const enemyId = enemyResponse.userId
+
+        const gameResponse = await initGame({
+          player_id: playerId,
+          enemy_id: enemyId,
+          first_player: playerId,
+        });
+        console.log(gameResponse);
+
+        setPieces(createInitialPieces(gameResponse.personalitys));
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    initializeGame();
+  }, []);
 
   useEffect(() => {
     if (command) {
-      setPieces((prev) => MoveCommand(prev, command, startAnimation));
+      (async () => {
+        const newPieces = await MoveCommand(pieces, command, startAnimation);
+        setPieces(newPieces);
+      })();
     }
   }, [command, startAnimation]);
 
