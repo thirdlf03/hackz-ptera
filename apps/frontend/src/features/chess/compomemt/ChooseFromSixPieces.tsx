@@ -228,7 +228,7 @@ const ChooseFromSixPieces = ({ piece }: ChessPieceProps) => {
     king: King,
   }[type];
 
-  // ナイト（id 25, 30）のみY軸180度回転
+  // ナイト（id 25, 30）のみz軸180度回転
   const pieceRotation: [number, number, number] =
     id === 25 || id === 30 ? [0, 0, Math.PI] : [0, 0, 0];
 
