@@ -23,14 +23,33 @@ import {
 import { z } from "zod";
 
 /* ======================
- * 入力（solveActionのデモ用）
+ * Chess Piece Types
  * ====================== */
-const SolveActionInputSchema = z.object({
-  from: z.string().regex(/^[a-h][1-8]$/, "from must be like a1-h8"),
-  to: z.string().regex(/^[a-h][1-8]$/, "to must be like a1-h8"),
-  order: z.string().min(1), // デモ。後で enum にしてもOK
+const SixtyFourPositionSchema = z.object({
+  x: z.number().optional(),
+  y: z.number().optional(),
+  z: z.number().optional(),
 });
-type SolveActionInput = z.infer<typeof SolveActionInputSchema>;
+
+const PieceSchema = z.object({
+  id: z.int().min(0).max(31),
+  exist: z.boolean().default(true),
+  type: z.enum(["pawn", "rook", "knight", "bishop", "queen", "king"]),
+  color: z.enum(["white", "black"]),
+  position: SixtyFourPositionSchema,
+});
+
+/* ======================
+ * 入力（ResolveAction）
+ * ====================== */
+const ResolveActionInputSchema = z.object({
+  piece_id: z.int().min(0).max(31),
+  pieces: z.array(PieceSchema),
+  from: z.string().regex(/^[a-h][1-8]$/, "Must be a valid chess position (e.g., 'g4')"),
+  to: z.string().regex(/^[a-h][1-8]$/, "Must be a valid chess position (e.g., 'f6')"),
+  order: z.string(),
+});
+type ResolveActionInput = z.infer<typeof ResolveActionInputSchema>;
 
 /* ======================
  * 出力（あなたの契約）
@@ -86,20 +105,22 @@ export const handler = async (event: {
       typeof event.body === "string" ? JSON.parse(event.body) : (event.body ?? {});
 
     // 2) 入力検証（ここが壊れてたら 400）
-    const input: SolveActionInput = SolveActionInputSchema.parse(rawBody);
+    const input: ResolveActionInput = ResolveActionInputSchema.parse(rawBody);
 
     // 3) デモ用指示文：構造化を最優先で強制
-    //    盤面が無いので「入力の from/to をそのまま返す」方針にして安定させる
+    //    盤面情報（pieces）を含めてBedrockに渡す
     const userText = [
       `You must call the tool "solve_action".`,
       `Do NOT output any plain text.`,
-      `This is a demo. Use the provided from/to as-is.`,
+      `Analyze the current board state and the user's command.`,
       `Return {from,to,attack,reason} as tool arguments.`,
+      `Current pieces: ${JSON.stringify(input.pieces)}`,
+      `piece_id: ${input.piece_id}`,
       `order: ${input.order}`,
       `from: ${input.from}`,
       `to: ${input.to}`,
-      `attack: set true only if you think this move captures (best-effort).`,
-      `reason: short reason.`,
+      `attack: set true only if this move captures an opponent's piece.`,
+      `reason: short reason for this action.`,
     ].join("\n");
 
     const request: ConverseCommandInput = {
