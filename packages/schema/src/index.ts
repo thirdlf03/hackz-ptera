@@ -7,3 +7,4 @@ export * from "./personality";
 export * from "./backend-chess";
 export * from "./resolve-action";
 export * from "./initGame";
+export * from "./recodeWinner";

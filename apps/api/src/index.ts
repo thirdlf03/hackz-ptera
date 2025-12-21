@@ -8,12 +8,14 @@ import {
   ResolveActionInputSchema,
   initGameSchema,
   UserCreatedInputSchema,
+  RecodeWinnerSchema,
 } from "@repo/schema";
 import { createGeminiClient } from "./lib/gemini";
 import { transformVoiceInput } from "./lib/voice-input-transformer";
 import { resolveAction } from "./lib/resolve-action";
 import { drizzle } from "drizzle-orm/d1";
-import { users } from "./db/schema";
+import { eq } from "drizzle-orm";
+import { users, games } from "./db/schema";
 import { createGame } from "./lib/create-game";
 
 type Bindings = {
@@ -94,6 +96,21 @@ const api = new Hono<{ Bindings: Bindings }>()
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "Unknown error occurred";
       return c.json({ error: errorMessage }, 500);
+    }
+  })
+  .patch("/v1/recodeWinner", zValidator("json", RecodeWinnerSchema), async (c) => {
+    try {
+      const db = drizzle(c.env.DB);
+      const winnerData = c.req.valid("json");
+      await db
+        .update(games)
+        .set({ winner: winnerData.winner })
+        .where(eq(games.id, winnerData.game_id));
+
+      return c.json({ success: true }, 200);
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Unknown error occurred";
+      return c.json({ success: false, error: errorMessage }, 500);
     }
   });
 
