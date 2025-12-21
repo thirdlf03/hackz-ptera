@@ -1,14 +1,10 @@
-import {
-  type initGame,
-  type initGameResponse,
-  initGameResponseSchema,
-} from "@repo/schema";
+import { type initGame, type initGameResponse, initGameResponseSchema } from "@repo/schema";
 import { DrizzleD1Database } from "drizzle-orm/d1";
 import { games, personalitys } from "../db/schema";
 
 export async function createGame(
   gameData: initGame,
-  db: DrizzleD1Database
+  db: DrizzleD1Database,
 ): Promise<initGameResponse> {
   try {
     const result = await db
@@ -32,8 +28,7 @@ export async function createGame(
 
     const randomPersonalitys = [];
     for (let i = 0; i < 32; i++) {
-      randomPersonalitys[i] =
-        allPersonalitys[Math.floor(Math.random() * allPersonalitys.length)];
+      randomPersonalitys[i] = allPersonalitys[Math.floor(Math.random() * allPersonalitys.length)];
     }
 
     const response = initGameResponseSchema.parse({
@@ -43,9 +38,7 @@ export async function createGame(
     return response;
   } catch (error) {
     throw new Error(
-      `Failed to create game: ${
-        error instanceof Error ? error.message : String(error)
-      }`
+      `Failed to create game: ${error instanceof Error ? error.message : String(error)}`,
     );
   }
 }

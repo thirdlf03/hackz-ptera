@@ -198,7 +198,7 @@ const ChooseFromSixPieces = ({ piece }: ChessPieceProps) => {
       groupRef.current.position.set(
         animatingPiece.from.x!,
         animatingPiece.from.y!,
-        animatingPiece.from.z!
+        animatingPiece.from.z!,
       );
     }
   }, [isAnimating, animatingPiece]);
@@ -207,11 +207,7 @@ const ChooseFromSixPieces = ({ piece }: ChessPieceProps) => {
     if (!groupRef.current) return;
 
     if (isAnimating && animatingPiece) {
-      const target = new Vector3(
-        animatingPiece.to.x,
-        animatingPiece.to.y,
-        animatingPiece.to.z
-      );
+      const target = new Vector3(animatingPiece.to.x, animatingPiece.to.y, animatingPiece.to.z);
 
       // 滑らかに移動（lerpの係数を調整で速度変更可能）
       groupRef.current.position.lerp(target, 0.04);

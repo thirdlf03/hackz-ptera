@@ -8,9 +8,10 @@ export async function fetchUsers(): Promise<UsersResponse> {
 }
 
 export async function createUsers(name: string): Promise<UsersResponse> {
-  const response = await client.v1.users.$post({json : {
-      name: name
-    }
-  })
+  const response = await client.v1.users.$post({
+    json: {
+      name: name,
+    },
+  });
   return handleResponse<UsersResponse>(response);
 }
