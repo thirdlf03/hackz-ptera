@@ -4,6 +4,7 @@ import { useAnimationStore, useTurnStore, useTextLocationStore } from "./store";
 import { useFrame } from "@react-three/fiber";
 import { useRef, useEffect } from "react";
 import * as THREE from "three";
+import { Text } from "@react-three/drei";
 
 interface ChessPieceProps {
   piece: Piece;
@@ -182,11 +183,11 @@ const ChooseFromSixPieces = ({ piece }: ChessPieceProps) => {
   const { position, color, type, id } = piece;
   const groupRef = useRef<Group>(null);
   const { animatingPiece, clearAnimation } = useAnimationStore();
-  const { change: changeTurn } = useTurnStore();
-  const { clearText } = useTextLocationStore();
+  const { change: changeTurn, turn } = useTurnStore();
+  const { clearText, text } = useTextLocationStore();
 
   const threeColor = new THREE.Color(
-    color === "white" ? "rgba(205, 188, 139, 1)" : "hsla(37, 68%, 24%, 1.00)",
+    color === "white" ? "rgba(205, 188, 139, 1)" : "hsla(37, 68%, 24%, 1.00)"
   );
 
   const isAnimating = animatingPiece?.id === id;
@@ -210,7 +211,7 @@ const ChooseFromSixPieces = ({ piece }: ChessPieceProps) => {
         animatingPiece.to.y,
         animatingPiece.to.z
       );
-      groupRef.current.position.lerp(target, 0.04);
+      groupRef.current.position.lerp(target, 0.01);
 
       if (groupRef.current.position.distanceTo(target) < 0.01) {
         groupRef.current.position.copy(target);
@@ -239,6 +240,19 @@ const ChooseFromSixPieces = ({ piece }: ChessPieceProps) => {
       <group rotation={pieceRotation}>
         <PieceComponent color={threeColor} />
       </group>
+      {isAnimating && text && (
+        <Text
+          position={[0, 0, 1.2]} // 駒のローカル座標でz=1.2（駒の上）
+          fontSize={0.2}
+          color='black'
+          outlineWidth={0.01}
+          outlineColor='black'
+          maxWidth={2}
+          rotation={turn == "black" ? [0, 0, Math.PI] : [0, 0, 0]}
+        >
+          {text}
+        </Text>
+      )}
     </group>
   );
 };
