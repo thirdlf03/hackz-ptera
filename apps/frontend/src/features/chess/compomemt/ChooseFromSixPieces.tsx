@@ -178,7 +178,6 @@ function King({ color }: { color: THREE.Color }) {
   );
 }
 
-// 駒のレンダリング
 const ChooseFromSixPieces = ({ piece }: ChessPieceProps) => {
   const { position, color, type, id } = piece;
   const groupRef = useRef<Group>(null);
@@ -189,16 +188,14 @@ const ChooseFromSixPieces = ({ piece }: ChessPieceProps) => {
     color === "white" ? "rgba(205, 188, 139, 1)" : "hsla(37, 68%, 24%, 1.00)"
   );
 
-  // この駒がアニメーション対象かどうか
   const isAnimating = animatingPiece?.id === id;
 
-  // アニメーション開始時に初期位置をセット
   useEffect(() => {
     if (isAnimating && animatingPiece && groupRef.current) {
       groupRef.current.position.set(
         animatingPiece.from.x!,
         animatingPiece.from.y!,
-        animatingPiece.from.z!,
+        animatingPiece.from.z!
       );
     }
   }, [isAnimating, animatingPiece]);
@@ -207,16 +204,17 @@ const ChooseFromSixPieces = ({ piece }: ChessPieceProps) => {
     if (!groupRef.current) return;
 
     if (isAnimating && animatingPiece) {
-      const target = new Vector3(animatingPiece.to.x, animatingPiece.to.y, animatingPiece.to.z);
-
-      // 滑らかに移動（lerpの係数を調整で速度変更可能）
+      const target = new Vector3(
+        animatingPiece.to.x,
+        animatingPiece.to.y,
+        animatingPiece.to.z
+      );
       groupRef.current.position.lerp(target, 0.04);
 
-      // 目標位置に十分近づいたらアニメーション完了
       if (groupRef.current.position.distanceTo(target) < 0.01) {
-        groupRef.current.position.copy(target); // 正確な位置にスナップ
+        groupRef.current.position.copy(target);
         clearAnimation();
-        changeTurn(); // ターン切り替え
+        changeTurn();
       }
     }
   });
@@ -230,9 +228,15 @@ const ChooseFromSixPieces = ({ piece }: ChessPieceProps) => {
     king: King,
   }[type];
 
+  // ナイト（id 25, 30）のみY軸180度回転
+  const pieceRotation: [number, number, number] =
+    id === 25 || id === 30 ? [0, 0, Math.PI] : [0, 0, 0];
+
   return (
     <group ref={groupRef} position={[position.x!, position.y!, position.z!]}>
-      <PieceComponent color={threeColor} />
+      <group rotation={pieceRotation}>
+        <PieceComponent color={threeColor} />
+      </group>
     </group>
   );
 };

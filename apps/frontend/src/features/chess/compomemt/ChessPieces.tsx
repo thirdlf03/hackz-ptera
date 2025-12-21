@@ -148,7 +148,7 @@ const vectors = new Map<string, Position>([
 
 function LinkVoiceAndId(
   pieces: Piece[],
-  command: VoiceInput | null,
+  command: VoiceInput | null
 ): [Piece["id"], Position | null] {
   if (!command) return [-1, null];
 
@@ -169,7 +169,7 @@ function LinkVoiceAndId(
     (p) =>
       p.position.x === fromPosition.x &&
       p.position.y === fromPosition.y &&
-      p.position.z === fromPosition.z,
+      p.position.z === fromPosition.z
   );
 
   if (!piece) {
@@ -180,10 +180,10 @@ function LinkVoiceAndId(
   return [piece.id, toPosition];
 }
 
-async function MoveCommand  (
+async function MoveCommand(
   pieces: Piece[],
   command: VoiceInput | null,
-  startAnimation: (id: number, from: Position, to: Position) => void,
+  startAnimation: (id: number, from: Position, to: Position) => void
 ): Promise<Piece[]> {
   const [pieceID, toPosition] = LinkVoiceAndId(pieces, command);
 
@@ -197,24 +197,29 @@ async function MoveCommand  (
   if (!location || !fromLocation || !toLocation) return [];
 
   const getPieceCommand = async () => {
-    const response = await resolveAction(pieceID, pieces, fromLocation, toLocation, "hogehoge")
+    const response = await resolveAction(
+      pieceID,
+      pieces,
+      fromLocation,
+      toLocation,
+      "hogehoge"
+    );
     console.log(response);
-    command.to = response.to
+    command.to = response.to;
   };
 
-  await getPieceCommand()
+  await getPieceCommand();
   const [_, newToPosition] = LinkVoiceAndId(pieces, command);
 
   if (!newToPosition) {
-    return []
+    return [];
   }
 
-  
   return pieces.map((piece) => {
     if (piece.id === pieceID) {
       // アニメーション開始
       startAnimation(piece.id, piece.position, newToPosition);
-      console.log(piece)
+      console.log(piece);
       return {
         ...piece,
         position: toPosition,
@@ -236,10 +241,10 @@ const ChessPieces = ({ command }: { command: VoiceInput | null }) => {
     const initializeGame = async () => {
       try {
         const playerResponse = await createUser("player");
-        const playerId = playerResponse.userId
+        const playerId = playerResponse.userId;
 
         const enemyResponse = await createUser("enemy");
-        const enemyId = enemyResponse.userId
+        const enemyId = enemyResponse.userId;
 
         const gameResponse = await initGame({
           player_id: playerId,
