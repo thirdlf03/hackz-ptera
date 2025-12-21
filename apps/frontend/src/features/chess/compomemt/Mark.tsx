@@ -1,11 +1,15 @@
 import { Text3D } from "@react-three/drei";
+import * as THREE from "three";
 
 const FONT_URL =
   "https://threejs.org/examples/fonts/helvetiker_regular.typeface.json";
 
 export default function Mark({ color }: { color: string }) {
-  const isBlack = color === "black";
+  const threeColor = new THREE.Color(
+    color === "white" ? "rgba(72, 63, 36, 1)" : "hsla(37, 68%, 24%, 1.00)"
+  );
 
+  const isBlack = color === "black";
   // 黒は Z軸で180度回転（文字を正しい向きに）
   const rotation: [number, number, number] = isBlack
     ? [0, 0, Math.PI]
@@ -75,7 +79,7 @@ export default function Mark({ color }: { color: string }) {
           font={FONT_URL}
         >
           {num}
-          <meshStandardMaterial color={color} />
+          <meshStandardMaterial color={threeColor} />
         </Text3D>
       ))}
 
@@ -90,7 +94,7 @@ export default function Mark({ color }: { color: string }) {
           font={FONT_URL}
         >
           {letter}
-          <meshStandardMaterial color={color} />
+          <meshStandardMaterial color={threeColor} />
         </Text3D>
       ))}
     </group>

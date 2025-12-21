@@ -3,13 +3,14 @@ import type { Piece } from "@repo/schema";
 import { useAnimationStore, useTurnStore } from "./store";
 import { useFrame } from "@react-three/fiber";
 import { useRef, useEffect } from "react";
+import * as THREE from "three";
 
 interface ChessPieceProps {
   piece: Piece;
 }
 
 // ポーン
-function Pawn({ color }: { color: string }) {
+function Pawn({ color }: { color: THREE.Color }) {
   return (
     <group rotation={[Math.PI / 2, 0, 0]}>
       <mesh position={[0, 0.05, 0]}>
@@ -29,7 +30,7 @@ function Pawn({ color }: { color: string }) {
 }
 
 // ルーク
-function Rook({ color }: { color: string }) {
+function Rook({ color }: { color: THREE.Color }) {
   return (
     <group rotation={[Math.PI / 2, 0, 0]}>
       <mesh position={[0, 0.05, 0]}>
@@ -62,7 +63,7 @@ function Rook({ color }: { color: string }) {
 }
 
 // ナイト
-function Knight({ color }: { color: string }) {
+function Knight({ color }: { color: THREE.Color }) {
   return (
     <group rotation={[Math.PI / 2, 0, 0]}>
       <mesh position={[0, 0.05, 0]}>
@@ -90,7 +91,7 @@ function Knight({ color }: { color: string }) {
 }
 
 // ビショップ
-function Bishop({ color }: { color: string }) {
+function Bishop({ color }: { color: THREE.Color }) {
   return (
     <group rotation={[Math.PI / 2, 0, 0]}>
       <mesh position={[0, 0.05, 0]}>
@@ -114,7 +115,7 @@ function Bishop({ color }: { color: string }) {
 }
 
 // クイーン
-function Queen({ color }: { color: string }) {
+function Queen({ color }: { color: THREE.Color }) {
   return (
     <group rotation={[Math.PI / 2, 0, 0]}>
       <mesh position={[0, 0.05, 0]}>
@@ -151,7 +152,7 @@ function Queen({ color }: { color: string }) {
 }
 
 // キング
-function King({ color }: { color: string }) {
+function King({ color }: { color: THREE.Color }) {
   return (
     <group rotation={[Math.PI / 2, 0, 0]}>
       <mesh position={[0, 0.05, 0]}>
@@ -185,7 +186,9 @@ const ChooseFromSixPieces = ({ piece }: ChessPieceProps) => {
   const { animatingPiece, clearAnimation } = useAnimationStore();
   const { change: changeTurn } = useTurnStore();
 
-  const pieceColor = color === "white" ? "#f5f5dc" : "#4a3728";
+  const threeColor = new THREE.Color(
+    color === "white" ? "rgba(205, 188, 139, 1)" : "hsla(37, 68%, 24%, 1.00)"
+  );
 
   // この駒がアニメーション対象かどうか
   const isAnimating = animatingPiece?.id === id;
@@ -234,7 +237,7 @@ const ChooseFromSixPieces = ({ piece }: ChessPieceProps) => {
 
   return (
     <group ref={groupRef} position={[position.x!, position.y!, position.z!]}>
-      <PieceComponent color={pieceColor} />
+      <PieceComponent color={threeColor} />
     </group>
   );
 };

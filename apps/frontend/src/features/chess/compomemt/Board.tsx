@@ -1,6 +1,5 @@
 import { Line, Loader } from "@react-three/drei";
 import { OrbitControls } from "@react-three/drei";
-import { Canvas } from "@react-three/fiber";
 import ChessPieces from "./ChessPieces";
 import { Microphone } from "@/features/microphone";
 import { useState } from "react";
@@ -19,7 +18,9 @@ interface BoardProps {
 function ChessLine() {
   const squares = [];
   const squareSize = 0.6; // 1マスのサイズ
-  const borderColor = new THREE.Color("rgba(228, 221, 209, 1)").convertSRGBToLinear();
+  const borderColor = new THREE.Color(
+    "rgba(228, 221, 209, 1)"
+  ).convertSRGBToLinear();
 
   for (let row = 0; row < 8; row++) {
     for (let col = 0; col < 8; col++) {
@@ -57,16 +58,16 @@ function ChessLine() {
     </>
   );
 }
-const Board: React.FC<BoardProps> = ({ className }) => {
+const Board: React.FC<BoardProps> = ({}) => {
   const [commanddata, setCommanddata] = useState<VoiceInput | null>(null);
   const { turn } = useTurnStore();
 
   return (
-    <Canvas className={className}>
+    <>
       <OrbitControls />
       <Loader />
       <ambientLight intensity={0.6} />
-      <directionalLight position={[5, 5, 5]} />
+      <directionalLight position={[5, 6.5, 5]} />
       {turn == "white" && (
         <Microphone
           onTranscript={(text) => console.log("認識結果:", text)}
@@ -99,12 +100,12 @@ const Board: React.FC<BoardProps> = ({ className }) => {
         <mesh>
           <planeGeometry args={[6, 6]} />
           <Mark color={turn} />
-          <meshPhongMaterial color="rgba(173, 138, 41, 1)" />
+          <meshPhongMaterial color='rgba(173, 138, 41, 1)' />
         </mesh>
         <ChessLine />
         <ChessPieces command={commanddata} />
       </group>
-    </Canvas>
+    </>
   );
 };
 
