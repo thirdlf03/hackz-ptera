@@ -148,7 +148,7 @@ const vectors = new Map<string, Position>([
 
 function LinkVoiceAndId(
   pieces: Piece[],
-  command: VoiceInput | null
+  command: VoiceInput | null,
 ): [Piece["id"], Position | null] {
   if (!command) return [-1, null];
 
@@ -169,7 +169,7 @@ function LinkVoiceAndId(
     (p) =>
       p.position.x === fromPosition.x &&
       p.position.y === fromPosition.y &&
-      p.position.z === fromPosition.z
+      p.position.z === fromPosition.z,
   );
 
   if (!piece) {
@@ -183,8 +183,8 @@ function LinkVoiceAndId(
 async function MoveCommand  (
   pieces: Piece[],
   command: VoiceInput | null,
-  startAnimation: (id: number, from: Position, to: Position) => void
-): Promise<Piece[]> {
+  startAnimation: (id: number, from: Position, to: Position) => void,
+): Piece[] {
   const [pieceID, toPosition] = LinkVoiceAndId(pieces, command);
 
   if (pieceID === -1 || !toPosition) return pieces;

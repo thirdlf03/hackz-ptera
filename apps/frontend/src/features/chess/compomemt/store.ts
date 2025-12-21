@@ -20,8 +20,7 @@ interface AnimationState {
 
 export const useTurnStore = create<TurnState>((set) => ({
   turn: "white",
-  change: () =>
-    set((state) => ({ turn: state.turn === "white" ? "black" : "white" })),
+  change: () => set((state) => ({ turn: state.turn === "white" ? "black" : "white" })),
 }));
 
 export const useAnimationStore = create<AnimationState>((set) => ({
