@@ -16,7 +16,7 @@ function App() {
 
           <Center position={[0, 3.1, 0.3]}>
             <Text3D
-              font='https://threejs.org/examples/fonts/helvetiker_regular.typeface.json'
+              font='/fonts/RoundedMplus1c_Regular.json'
               size={0.5}
               height={0.1}
               bevelEnabled={true} // ベベルを有効化
